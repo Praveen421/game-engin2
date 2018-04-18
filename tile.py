@@ -19,15 +19,21 @@ class Tile(object):
         self.text = ""
         # texture
         self.texture = Image
+        self.bitx = 0
+        self.bity = 0
+        self.bitw = 0
+        self.bith = 0
         # states 
         self.collision = True
         self.physicalState = 1
         self.display = True
         self.pressed = False
-        self.textureEnabled = False
+        self.textureEnabled = True
         self.textEnabled = True
         self.physicsEnabled = False
 
+    def setImage(self,texture):
+        self.texture = texture
     def setFrame(self,fx,fy,fwidth,fheight):
         self.fx = fx
         self.fy = fy

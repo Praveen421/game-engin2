@@ -3,7 +3,7 @@ import wx
 class Example(wx.Frame):
     def __init__(self, parent, title):
         super(Example, self).__init__(parent, title=title, 
-            size=(250, 150))
+            size=(250, 550))
 
         self.Bind(wx.EVT_PAINT, self.OnPaint)
 
