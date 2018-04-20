@@ -52,9 +52,9 @@ def worldToScreen(cords):
     return [int(x),int(y)]
 
 def display():
-    global pointer, level,Layer,cam,sprit
+    global pointer, layer_0,Layer,cam,sprit
        
-    for t in level.tiles:        
+    for t in layer_0.tiles:        
         x,y = worldToScreen([t.x,t.y,50])
         if t.textureEnabled:
             screen.blit(convertPILtoPygame(t.texture),(int(x),int(y)))
@@ -110,7 +110,7 @@ def convertPILtoPygame(image):
     return pygame.image.fromstring(data, size, mode)
 
 def _input(dt,mouse_rel,mouse_key):
-    global level,Layers,cam,currentPointerAssets,assets
+    global layer_0,Layers,cam,sentToBack,currentPointerAssets,assets
     # loop through the events
     for event in pygame.event.get():
         #check if the event is the x button
@@ -140,8 +140,14 @@ def _input(dt,mouse_rel,mouse_key):
                     currentPointerAssets =currentPointerAssets -1
                 pointer.setImage(assets[currentPointerAssets])
           
-            if event.key == pygame.K_0:
-                level._export()
+            if event.key == pygame.K_e:
+                layer_0._export()
+            if event.key == pygame.K_k:
+                if sentToBack:
+                    sentToBack = False
+                else:
+                    sentToBack = True
+            
     if mouse_key[0] :
         # getting the current position of the mouse 
         p = pygame.mouse.get_pos()
@@ -149,12 +155,15 @@ def _input(dt,mouse_rel,mouse_key):
         x,y,z = screenToWorld([pointer.x,pointer.y])
         t = Tile(x,y,pointer.width,pointer.height)
         t.setImage(pointer.image)
-        level.addTile(t)
+        if sentToBack:
+            layer_0.addTileAtStart(t)
+        else:
+            layer_0.addTile(t)
     if mouse_key[2]:
         # converting the pointer position to world cordinates
         x,y,z = screenToWorld([pointer.x,pointer.y])
         # checking if the pointer is inside the tile
-        flag = level.checkCollision(x,y)
+        flag = layer_0.checkCollision(x,y)
 def pointerUpdate():
     global pointer
 
@@ -196,9 +205,12 @@ scalex,scaley = -width/pixelFactor,-height/pixelFactor
 
 pos = pygame.mouse.get_pos()
 pointer = Pointer(pos[0],pos[1],70,70)
+# initlizing the camera 
 cam = camera()
+# initilizing the layers 
 Layers = []
-level = Level()
+# starting the 
+layer_0 = Level()
 
 sprit = Image.open("assets/sprites/tileset.png")
 assets = list()
@@ -206,6 +218,7 @@ assets = list()
 assetsLoader(sprit)
 currentPointerAssets = 0
 pointer.setImage(assets[currentPointerAssets])
+sentToBack = False
 
 print len(assets)
 def main():

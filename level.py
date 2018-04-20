@@ -15,10 +15,24 @@ class Level(object):
             pass
         if type == '.xml':
             pass
-    
+
+    def checkCollision(x,y):
+        FlagedTiles = []
+        for t in self.tiles:
+            if x > t.x and x < t.x+t.width:
+                if y > t.y and y < t.y+t.height:
+                    FlagedTiles.append(t)
+                    t.textureEnabled = False
+        return FlagedTiles
+
     def addTile(self,tile):
         self.tiles.append(tile)
     
+    def addTileAtStart(self,tile):
+        self.tiles.reverse()
+        self.tiles.append(tile)
+        self.tiles.reverse()
+
     def _export(self):
         file_ = open("level.json","w+")
 
