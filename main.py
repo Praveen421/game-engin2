@@ -1,6 +1,6 @@
 
 import pygame,math,time,os
-from level_designer import *
+from level import *
 from pointer import *
 from camera import *
 
@@ -127,6 +127,8 @@ def _input(dt,mouse_rel,mouse_key):
                 cam.update(dt,"left")
             if event.key == pygame.K_RIGHT:
                 cam.update(dt,"right")
+            if event.key == pygame.K_RCTRL:
+                pass
             if event.key == pygame.K_c:
                 if currentPointerAssets < len(assets):
                     currentPointerAssets = currentPointerAssets+1
@@ -140,7 +142,7 @@ def _input(dt,mouse_rel,mouse_key):
           
             if event.key == pygame.K_0:
                 level._export()
-    if(mouse_key[0]):
+    if mouse_key[0] :
         # getting the current position of the mouse 
         p = pygame.mouse.get_pos()
         # convert the screen coordinates to world co-ordinates
@@ -148,7 +150,11 @@ def _input(dt,mouse_rel,mouse_key):
         t = Tile(x,y,pointer.width,pointer.height)
         t.setImage(pointer.image)
         level.addTile(t)
-
+    if mouse_key[2]:
+        # converting the pointer position to world cordinates
+        x,y,z = screenToWorld([pointer.x,pointer.y])
+        # checking if the pointer is inside the tile
+        flag = level.checkCollision(x,y)
 def pointerUpdate():
     global pointer
 
