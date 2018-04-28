@@ -23,6 +23,8 @@ SOFTWARE.
 
 '''
 from PIL import Image
+from rect import *
+
 
 class Pointer():
     def __init__(self,x,y,width,height):
@@ -30,8 +32,15 @@ class Pointer():
         self.y = y
         self.width = width
         self.height = height
-        self.color = [254,254,254]
+        self.color = [254,0,0]
         self.image = Image
+        # frame details
+        self.fx = 0
+        self.fy = 0
+        self.fWidth = 100
+        self.fHeight = 100
+        # texture name
+        self.textureName = ''
         # states 
         self.collision = True
         self.physicalState = 1
@@ -45,6 +54,12 @@ class Pointer():
     def setPos(self,x,y):
         self.x = x
         self.y = y
+    def setFrame(self,r):
+        self.fx = r.x
+        self.fy = r.y
+        self.fWidth = r.w
+        self.fHeight = r.h
+
     def setWidth(self,width):
         self.width = width
     def setHeight(self,height):

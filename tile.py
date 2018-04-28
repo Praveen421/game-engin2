@@ -43,10 +43,7 @@ class Tile(object):
         self.text = ""
         # texture
         self.texture = Image
-        self.bitx = 0
-        self.bity = 0
-        self.bitw = 0
-        self.bith = 0
+        self.textureName = ''
         # states 
         self.collision = True
         self.physicalState = 1

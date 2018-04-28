@@ -22,7 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 '''
 import pygame,math,time,os
-from level import *
+from layer import *
 from pointer import *
 from camera import *
 
@@ -44,14 +44,6 @@ class colors(object):
         self.MAGENTA = (254,0,254)
 
 
-class Rect(object):
-    def __init__(self,x,y,w,h):
-        self.x = x
-        self.y = y
-        self.w = w
-        self.h = h
-    def get(self):
-        return (self.x,self.y,self.w+self.x,self.h+self.y)
 def screenToWorld(cords):
     global pixelFactor,scalex,scaley
     x,y,z = cords[0],cords[1],0
@@ -74,23 +66,41 @@ def worldToScreen(cords):
     return [int(x),int(y)]
 
 def display():
-    global pointer, layer_0,Layer,cam,sprit
-       
-    for t in layer_0.tiles:        
-        x,y = worldToScreen([t.x,t.y,50])
-        if t.textureEnabled:
-            screen.blit(convertPILtoPygame(t.texture),(int(x),int(y)))
+    global pointer, Layers,currentSelectedLayer,Layer,cam
+    
+    if sentToBack:
+        if pointer.textureEnabled:
+            screen.blit(convertPILtoPygame(pointer.image),(int(pointer.x),int(pointer.y)))
         else:
-            pygame.draw.rect(screen,color.RED,(int(x),int(y),int(t.width),int(t.height)))
+            pygame.draw.rect(screen,pointer.color,(int(pointer.x),int(pointer.y),int(pointer.width),int(pointer.height)))
     
-    if pointer.textureEnabled:
-        screen.blit(convertPILtoPygame(pointer.image),(int(pointer.x),int(pointer.y)))
+        for layer in Layers:
+            if layer[2]:
+                for t in layer[1].tiles:        
+                    x,y = worldToScreen([t.x,t.y,50])
+                    if t.textureEnabled:
+                        screen.blit(convertPILtoPygame(t.texture),(int(x),int(y)))
+                    else:
+                        pygame.draw.rect(screen,pointer.color,(int(x),int(y),int(t.width),int(t.height)))
+            
     else:
-        pygame.draw.rect(screen,color.RED,(int(pointer.x),int(pointer.y),int(pointer.width),int(pointer.height)))
-    
+        for layer in Layers:
+            if layer[2]:
+                for t in layer[1].tiles:
+                    x,y = worldToScreen([t.x,t.y,50])
+                    if t.textureEnabled:
+                        screen.blit(convertPILtoPygame(t.texture),(int(x),int(y)))
+                    else:
+                        pygame.draw.rect(screen,pointer.color,(int(x),int(y),int(t.width),int(t.height)))
+                
+        if pointer.textureEnabled:
+            screen.blit(convertPILtoPygame(pointer.image),(int(pointer.x),int(pointer.y)))
+        else:
+            pygame.draw.rect(screen,pointer.color,(int(pointer.x),int(pointer.y),int(pointer.width),int(pointer.height)))
+        
 
-def assetsLoader(sprit):
-    global assets
+def assetsLoader():
+    global assets,spritesList
 
     r1 = Rect(30,170,100,120)
     r2 = Rect(140,180,40,50)
@@ -106,21 +116,36 @@ def assetsLoader(sprit):
     r12 = Rect(320,40,65,100)
     r13 = Rect(400,40,15,100)
     r14 = Rect(430,40,60,100)
-       
-    assets.append(sprit.crop(r1.get()))
-    assets.append(sprit.crop(r2.get()))
-    assets.append(sprit.crop(r3.get()))
-    assets.append(sprit.crop(r4.get()))
-    assets.append(sprit.crop(r5.get()))
-    assets.append(sprit.crop(r6.get()))
-    assets.append(sprit.crop(r7.get()))
-    assets.append(sprit.crop(r8.get()))
-    assets.append(sprit.crop(r9.get()))
-    assets.append(sprit.crop(r10.get()))
-    assets.append(sprit.crop(r11.get()))
-    assets.append(sprit.crop(r12.get()))
-    assets.append(sprit.crop(r13.get()))
-    assets.append(sprit.crop(r14.get()))
+
+    rs0 = Rect(0,0,112,304)
+    rc0 = Rect(0,0,544,236)
+    rw0 = Rect(0,0,112,96)
+    rg0 = Rect(0,0,616,110)
+
+    for sprite in spritesList:
+        if sprite[2] == "clouds.png":
+            assets.append([sprite[1].crop(rc0.get()),rc0,sprite[2]])
+        if sprite[2] == "sky.png":
+            assets.append([sprite[1].crop(rs0.get()),rs0,sprite[2]])
+        if sprite[2] == "sea.png":
+            assets.append([sprite[1].crop(rw0.get()),rw0,sprite[2]])
+        if sprite[2] == "far_grounds.png":
+            assets.append([sprite[1].crop(rg0.get()),rg0,sprite[2]])
+        if sprite[2] == "tileset.png":
+            assets.append([sprite[1].crop(r1.get()),r1,sprite[2]])
+            assets.append([sprite[1].crop(r2.get()),r2,sprite[2]])
+            assets.append([sprite[1].crop(r3.get()),r3,sprite[2]])
+            assets.append([sprite[1].crop(r4.get()),r4,sprite[2]])
+            assets.append([sprite[1].crop(r5.get()),r5,sprite[2]])
+            assets.append([sprite[1].crop(r6.get()),r6,sprite[2]])
+            assets.append([sprite[1].crop(r7.get()),r7,sprite[2]])
+            assets.append([sprite[1].crop(r8.get()),r8,sprite[2]])
+            assets.append([sprite[1].crop(r9.get()),r9,sprite[2]])
+            assets.append([sprite[1].crop(r10.get()),r10,sprite[2]])
+            assets.append([sprite[1].crop(r11.get()),r11,sprite[2]])
+            assets.append([sprite[1].crop(r12.get()),r12,sprite[2]])
+            assets.append([sprite[1].crop(r13.get()),r13,sprite[2]])
+            assets.append([sprite[1].crop(r14.get()),r14,sprite[2]])
  
     
     
@@ -132,7 +157,7 @@ def convertPILtoPygame(image):
     return pygame.image.fromstring(data, size, mode)
 
 def _input(dt,mouse_rel,mouse_key):
-    global layer_0,Layers,cam,sentToBack,currentPointerAssets,assets
+    global currentSelectedLayer,Layers,cam,sentToBack,currentPointerAssets,assets
     # loop through the events
     for event in pygame.event.get():
         #check if the event is the x button
@@ -156,26 +181,60 @@ def _input(dt,mouse_rel,mouse_key):
                     currentPointerAssets = currentPointerAssets+1
                 if currentPointerAssets >= len(assets):
                     currentPointerAssets = len(assets)-1
-                pointer.setImage(assets[currentPointerAssets])
+                pointer.setImage(assets[currentPointerAssets][0])
+                pointer.setFrame(assets[currentPointerAssets][1])
+                pointer.textureName = assets[currentPointerAssets][2]
             if event.key == pygame.K_v:
                 if currentPointerAssets != 0:
                     currentPointerAssets =currentPointerAssets -1
-                pointer.setImage(assets[currentPointerAssets])
-          
+                pointer.setImage(assets[currentPointerAssets][0])
+                pointer.setFrame(assets[currentPointerAssets][1])
+                pointer.textureName = assets[currentPointerAssets][2]
+            if event.key == pygame.K_h:
+                # increase pointer height
+                pointer.height += 10
+            if event.key == pygame.K_j:
+                # increase the pointer width
+                pointer.width += 10
+            if event.key == pygame.K_i:
+                # toggle the pointer texture
+                if pointer.textureEnabled:
+                    pointer.textureEnabled = False
+                else:
+                    pointer.textureEnabled = True
             if event.key == pygame.K_e:
-                layer_0._export()
+                Layers[currentSelectedLayer][1]._export()
             if event.key == pygame.K_k:
                 if sentToBack:
                     sentToBack = False
                 else:
                     sentToBack = True
+            if event.key == pygame.K_n:
+                l = Layer()
+                id = len(Layers)
+                Layers.append([id,l,True])
+                currentSelectedLayer = id
+                print ("Layer Selected : ", currentSelectedLayer)
+            if event.key == pygame.K_l:
+                if Layers[currentSelectedLayer][2]:
+                    Layers[currentSelectedLayer][2] = False
+                else:
+                    Layers[currentSelectedLayer][2] = True
             if event.key == pygame.K_KP_PLUS:
                 # increse the current layer number
-                pass 
+                if currentSelectedLayer < len(Layers):
+                    currentSelectedLayer = currentSelectedLayer+1
+                if currentSelectedLayer >= len(Layers):
+                    currentSelectedLayer = len(Layers)-1
+                print ("Layer Selected : ", currentSelectedLayer)
             if event.key == pygame.K_KP_MINUS:
                 # decrese the current layer number
-                pass
-
+                if currentSelectedLayer !=0:
+                    currentSelectedLayer = currentSelectedLayer-1
+                print ("Layer Selected : ", currentSelectedLayer)
+            if event.key == pygame.K_LCTRL:
+                if event.key == pygame.K_z:
+                    Layers[currentSelectedLayer][1].removeRecentTile()
     if mouse_key[0] :
         # getting the current position of the mouse 
         p = pygame.mouse.get_pos()
@@ -183,15 +242,18 @@ def _input(dt,mouse_rel,mouse_key):
         x,y,z = screenToWorld([pointer.x,pointer.y])
         t = Tile(x,y,pointer.width,pointer.height)
         t.setImage(pointer.image)
+        t.setFrame(pointer.fx,pointer.fy,pointer.fWidth,pointer.fHeight)
+        t.textureName = pointer.textureName
+        t.color = pointer.color
         if sentToBack:
-            layer_0.addTileAtStart(t)
+            Layers[currentSelectedLayer][1].addTileAtStart(t)
         else:
-            layer_0.addTile(t)
+            Layers[currentSelectedLayer][1].addTile(t)
     if mouse_key[2]:
         # converting the pointer position to world cordinates
         x,y,z = screenToWorld([pointer.x,pointer.y])
         # checking if the pointer is inside the tile
-        flag = layer_0.checkCollision(x,y)
+        flag = Layers[currentSelectedLayer].checkCollision(x,y)
 def pointerUpdate():
     global pointer
 
@@ -202,8 +264,22 @@ def pointerUpdate():
 
 
 
+def readSprites():
+    # get the cuurent directory
+    path = os.getcwd()
+    
+    assetsDir = "\\assets"
+    spritesDir = "\\sprites"
 
+    sprites = os.listdir(path+assetsDir+spritesDir) 
+    #print path+assetsDir+spritesDir
 
+    print (sprites)
+    s0 = Image.open("assets/sprites/tileset.png")
+    id = 0
+    for name in sprites:
+        s0 = Image.open("assets/sprites/"+name)
+        spritesList.append([id,s0,name])
 
 # initilize the pygame
 pygame.init()
@@ -232,23 +308,31 @@ pixelFactor = 200/cam.pos[2]
 scalex,scaley = -width/pixelFactor,-height/pixelFactor
 
 pos = pygame.mouse.get_pos()
-pointer = Pointer(pos[0],pos[1],70,70)
+pointer = Pointer(pos[0],pos[1],100,100)
+#pointer.textureEnabled = False
 # initlizing the camera 
 cam = camera()
 # initilizing the layers 
 Layers = []
-# starting the 
-layer_0 = Level()
+# starting the first layer 
+layer_0 = Layer()
+# added the default layer object to layers
+Layers.append([1,layer_0,True])
+currentSelectedLayer = 0
 
-sprit = Image.open("assets/sprites/tileset.png")
+spritesList = list()
+# read all the sprites
+readSprites()
 assets = list()
 
-assetsLoader(sprit)
-currentPointerAssets = 0
-pointer.setImage(assets[currentPointerAssets])
+assetsLoader()
+currentPointerAssets = 4
+pointer.setImage(assets[currentPointerAssets][0])
+pointer.setFrame(assets[currentPointerAssets][1])
+pointer.textureName = assets[currentPointerAssets][2]
 sentToBack = False
 
-print len(assets)
+print (len(assets))
 def main():
     while True:
     
