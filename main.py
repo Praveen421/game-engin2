@@ -67,7 +67,9 @@ def worldToScreen(cords):
 
 def display():
     global pointer, Layers,currentSelectedLayer,Layer,cam
-    
+
+    pygame.draw.rect(screen,(119, 121, 119),(int(0-cam.pos[0]),int(0-cam.pos[1]),int(12000-cam.pos[0]),int(550-cam.pos[1])))
+
     if sentToBack:
         if pointer.textureEnabled:
             screen.blit(convertPILtoPygame(pointer.image),(int(pointer.x),int(pointer.y)))
@@ -98,7 +100,9 @@ def display():
         else:
             pygame.draw.rect(screen,pointer.color,(int(pointer.x),int(pointer.y),int(pointer.width),int(pointer.height)))
         
-
+def part(str):
+    name,ext = str.split('.')
+    return name
 def assetsLoader():
     global assets,spritesList
 
@@ -116,6 +120,39 @@ def assetsLoader():
     r12 = Rect(320,40,65,100)
     r13 = Rect(400,40,15,100)
     r14 = Rect(430,40,60,100)
+    r15 = Rect(300,190,40,30)
+    r16 = Rect(350,190,20,30)
+    r17 = Rect(380,190,40,30)
+    r18 = Rect(420,160,40,50)
+    r19 = Rect(480,190,20,30)
+    r20 = Rect(320,230,30,40)
+    r21 = Rect(370,230,30,40)
+    r22 = Rect(410,230,40,40)
+    r23 = Rect(460,240,40,50)
+    r24 = Rect(510,180,50,90)
+    r25 = Rect(510,50,45,40)
+    r26 = Rect(560,50,50,40)
+    r27 = Rect(620,50,40,20)
+    r28 = Rect(620,73,50,25)
+    r29 = Rect(510,95,40,40)
+    r30 = Rect(550,95,55,40)
+    r31 = Rect(510,130,70,50)
+    r32 = Rect(585,120,50,50)
+    r33 = Rect(610,110,15,20)
+    r34 = Rect(640,110,35,35)
+    r35 = Rect(680,35,240,105)
+    r36 = Rect(675,140,50,40)
+    r37 = Rect(730,140,35,40)
+    r38 = Rect(780,140,50,40)
+    r39 = Rect(840,140,30,40)
+    r40 = Rect(725,190,95,115)
+    r41 = Rect(840,190,40,35)
+    r42 = Rect(890,190,35,35)
+    r43 = Rect(580,185,45,40)
+    r44 = Rect(640,185,30,40)
+    r45 = Rect(685,185,50,40)
+    r46 = Rect(570,240,70,50)
+    r47 = Rect(650,240,60,50)
 
     rs0 = Rect(0,0,112,304)
     rc0 = Rect(0,0,544,236)
@@ -124,32 +161,65 @@ def assetsLoader():
 
     for sprite in spritesList:
         if sprite[2] == "clouds.png":
-            assets.append([sprite[1].crop(rc0.get()),rc0,sprite[2]])
+            assets.append([sprite[1].crop(rc0.get()),rc0,part(sprite[2])])
         if sprite[2] == "sky.png":
-            assets.append([sprite[1].crop(rs0.get()),rs0,sprite[2]])
+            assets.append([sprite[1].crop(rs0.get()),rs0,part(sprite[2])])
         if sprite[2] == "sea.png":
-            assets.append([sprite[1].crop(rw0.get()),rw0,sprite[2]])
+            assets.append([sprite[1].crop(rw0.get()),rw0,part(sprite[2])])
         if sprite[2] == "far_grounds.png":
-            assets.append([sprite[1].crop(rg0.get()),rg0,sprite[2]])
+            assets.append([sprite[1].crop(rg0.get()),rg0,part(sprite[2])])
         if sprite[2] == "tileset.png":
-            assets.append([sprite[1].crop(r1.get()),r1,sprite[2]])
-            assets.append([sprite[1].crop(r2.get()),r2,sprite[2]])
-            assets.append([sprite[1].crop(r3.get()),r3,sprite[2]])
-            assets.append([sprite[1].crop(r4.get()),r4,sprite[2]])
-            assets.append([sprite[1].crop(r5.get()),r5,sprite[2]])
-            assets.append([sprite[1].crop(r6.get()),r6,sprite[2]])
-            assets.append([sprite[1].crop(r7.get()),r7,sprite[2]])
-            assets.append([sprite[1].crop(r8.get()),r8,sprite[2]])
-            assets.append([sprite[1].crop(r9.get()),r9,sprite[2]])
-            assets.append([sprite[1].crop(r10.get()),r10,sprite[2]])
-            assets.append([sprite[1].crop(r11.get()),r11,sprite[2]])
-            assets.append([sprite[1].crop(r12.get()),r12,sprite[2]])
-            assets.append([sprite[1].crop(r13.get()),r13,sprite[2]])
-            assets.append([sprite[1].crop(r14.get()),r14,sprite[2]])
+            assets.append([sprite[1].crop(r1.get()),r1,part(sprite[2])])
+            assets.append([sprite[1].crop(r2.get()),r2,part(sprite[2])])
+            assets.append([sprite[1].crop(r3.get()),r3,part(sprite[2])])
+            assets.append([sprite[1].crop(r4.get()),r4,part(sprite[2])])
+            assets.append([sprite[1].crop(r5.get()),r5,part(sprite[2])])
+            assets.append([sprite[1].crop(r6.get()),r6,part(sprite[2])])
+            assets.append([sprite[1].crop(r7.get()),r7,part(sprite[2])])
+            assets.append([sprite[1].crop(r8.get()),r8,part(sprite[2])])
+            assets.append([sprite[1].crop(r9.get()),r9,part(sprite[2])])
+            assets.append([sprite[1].crop(r10.get()),r10,part(sprite[2])])
+            assets.append([sprite[1].crop(r11.get()),r11,part(sprite[2])])
+            assets.append([sprite[1].crop(r12.get()),r12,part(sprite[2])])
+            assets.append([sprite[1].crop(r13.get()),r13,part(sprite[2])])
+            assets.append([sprite[1].crop(r14.get()),r14,part(sprite[2])])
+            assets.append([sprite[1].crop(r15.get()),r15,part(sprite[2])])
+            assets.append([sprite[1].crop(r16.get()),r16,part(sprite[2])])
+            assets.append([sprite[1].crop(r17.get()),r17,part(sprite[2])])
+            assets.append([sprite[1].crop(r18.get()),r18,part(sprite[2])])
+            assets.append([sprite[1].crop(r19.get()),r19,part(sprite[2])])
+            assets.append([sprite[1].crop(r20.get()),r20,part(sprite[2])])
+            assets.append([sprite[1].crop(r21.get()),r21,part(sprite[2])])
+            assets.append([sprite[1].crop(r22.get()),r22,part(sprite[2])])
+            assets.append([sprite[1].crop(r23.get()),r23,part(sprite[2])])
+            assets.append([sprite[1].crop(r24.get()),r24,part(sprite[2])])
+            assets.append([sprite[1].crop(r25.get()),r25,part(sprite[2])])
+            assets.append([sprite[1].crop(r26.get()),r26,part(sprite[2])])
+            assets.append([sprite[1].crop(r27.get()),r27,part(sprite[2])])
+            assets.append([sprite[1].crop(r28.get()),r28,part(sprite[2])])
+            assets.append([sprite[1].crop(r29.get()),r29,part(sprite[2])])
+            assets.append([sprite[1].crop(r30.get()),r30,part(sprite[2])])
+            assets.append([sprite[1].crop(r31.get()),r31,part(sprite[2])])
+            assets.append([sprite[1].crop(r32.get()),r32,part(sprite[2])])
+            assets.append([sprite[1].crop(r33.get()),r33,part(sprite[2])])
+            assets.append([sprite[1].crop(r34.get()),r34,part(sprite[2])])
+            assets.append([sprite[1].crop(r35.get()),r35,part(sprite[2])])
+            assets.append([sprite[1].crop(r36.get()),r36,part(sprite[2])])
+            assets.append([sprite[1].crop(r37.get()),r37,part(sprite[2])])
+            assets.append([sprite[1].crop(r38.get()),r38,part(sprite[2])])
+            assets.append([sprite[1].crop(r39.get()),r39,part(sprite[2])])
+            assets.append([sprite[1].crop(r40.get()),r40,part(sprite[2])])
+            assets.append([sprite[1].crop(r41.get()),r41,part(sprite[2])])
+            assets.append([sprite[1].crop(r42.get()),r42,part(sprite[2])])
+            assets.append([sprite[1].crop(r43.get()),r43,part(sprite[2])])
+            assets.append([sprite[1].crop(r44.get()),r44,part(sprite[2])])
+            assets.append([sprite[1].crop(r45.get()),r45,part(sprite[2])])
+            assets.append([sprite[1].crop(r46.get()),r46,part(sprite[2])])
+            assets.append([sprite[1].crop(r47.get()),r47,part(sprite[2])])
+            
+            
  
-    
-    
-
+ 
 def convertPILtoPygame(image):
     mode = image.mode
     size = image.size
@@ -196,6 +266,12 @@ def _input(dt,mouse_rel,mouse_key):
             if event.key == pygame.K_j:
                 # increase the pointer width
                 pointer.width += 10
+            if event.key == pygame.K_y:
+                # decrease pointer height
+                pointer.height -= 10
+            if event.key == pygame.K_u:
+                # decrease the pointer width
+                pointer.width -= 10
             if event.key == pygame.K_i:
                 # toggle the pointer texture
                 if pointer.textureEnabled:
@@ -210,8 +286,8 @@ def _input(dt,mouse_rel,mouse_key):
                 else:
                     sentToBack = True
             if event.key == pygame.K_n:
-                l = Layer()
                 id = len(Layers)
+                l = Layer(id)
                 Layers.append([id,l,True])
                 currentSelectedLayer = id
                 print ("Layer Selected : ", currentSelectedLayer)
@@ -261,6 +337,10 @@ def pointerUpdate():
     # convert the screen coordinates to world co-ordinates
     pointer.x = p[0]
     pointer.y = p[1]
+
+    if pointer.textureEnabled:
+        pointer.width = pointer.fWidth
+        pointer.height = pointer.fHeight
 
 
 
@@ -315,7 +395,7 @@ cam = camera()
 # initilizing the layers 
 Layers = []
 # starting the first layer 
-layer_0 = Layer()
+layer_0 = Layer(0)
 # added the default layer object to layers
 Layers.append([1,layer_0,True])
 currentSelectedLayer = 0
@@ -333,12 +413,32 @@ pointer.textureName = assets[currentPointerAssets][2]
 sentToBack = False
 
 print (len(assets))
+
+def help():
+    print ('''Key Map
+    use Arrow Key to move the camera 
+    - : layer selection 
+    + : layer selection 
+    l : hide layer 
+    n : create new layer 
+    c : change selected asset 
+    v : change selected asset 
+    i : toggle the pointer texture 
+    h : increase pointer height 
+    j : increase pointer width 
+    y : decrease poiter height 
+    u : decrease pointer width 
+    e : export layer 
+    p : help
+    ''')
+help()
+
 def main():
     while True:
     
         screen.fill(color.BLACK)
         # setting the smallest time variation
-        dt = float(clock.tick(60))/100
+        dt = float(clock.tick(60))/10
         clock.tick(60)
 
 

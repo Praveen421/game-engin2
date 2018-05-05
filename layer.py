@@ -29,10 +29,10 @@ import json
 
 class Layer(object):
 
-    def __init__(self):
+    def __init__(self,layerCode):
         self.tiles = []
         self.background = Image
-        self.layerCode = 1
+        self.layerCode = layerCode
     
     def createLayer(self,layer,type):
         if type == '.json':
@@ -59,14 +59,14 @@ class Layer(object):
     def removeRecentTile(self):
         del self.tiles[-1]
     def _export(self):
-        file_ = open("layer.json","w+")
+        file_ = open("layer_"+str(self.layerCode)+".json","w+")
                    
-        string_ = '{Tiles:['
+        string_ = '{"tiles":['
         for t in self.tiles:
-            s = '{x:'+str(t.x)+',y:'+str(t.y)+',w:'+str(t.width)+',h:'+str(t.height)+',text:anything'
-            s += ',color:[254,'+str(t.color[0])+','+str(t.color[1])+','+str(t.color[2])+'],collision:'+str(t.collision)+',display:'+str(t.display)
-            s += ',spriteEnabled:'+str(t.textureEnabled)
-            s += ',sprite:'+str(t.textureName)+',bitx:'+str(t.fx)+',bity:'+str(t.fy)+',bitw:'+str(t.fWidth)+',bith:'+str(t.fHeight)+',widthRatio:1,heightRatio:1}'
+            s = '{"x":'+str(t.x)+',"y":'+str(t.y)+',"w":'+str(t.width)+',"h":'+str(t.height)+',text:anything'
+            s += ',"color":[254,'+str(t.color[0])+','+str(t.color[1])+','+str(t.color[2])+'],"collision":'+str(t.collision)+',"display":'+str(t.display)
+            s += ',"spriteEnabled":'+str(t.textureEnabled)
+            s += ',"sprite":'+str(t.textureName)+',"bitx":'+str(t.fx)+',"bity":'+str(t.fy)+',"bitw":'+str(t.fWidth)+',"bith":'+str(t.fHeight)+',"widthRatio":1,"heightRatio":1}'
             string_ += s+','
         string_ += ']}'
 
