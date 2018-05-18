@@ -298,9 +298,9 @@ def _input(dt,mouse_rel,mouse_key):
                     Layers[currentSelectedLayer][2] = True
             if event.key == pygame.K_KP_PLUS:
                 # increse the current layer number
-                if currentSelectedLayer < len(Layers):
+                if currentSelectedLayer < len(Layers)-1:
                     currentSelectedLayer = currentSelectedLayer+1
-                if currentSelectedLayer >= len(Layers):
+                if currentSelectedLayer >= len(Layers)-1:
                     currentSelectedLayer = len(Layers)-1
                 print ("Layer Selected : ", currentSelectedLayer)
             if event.key == pygame.K_KP_MINUS:
@@ -311,7 +311,12 @@ def _input(dt,mouse_rel,mouse_key):
             if event.key == pygame.K_LCTRL:
                 if event.key == pygame.K_z:
                     Layers[currentSelectedLayer][1].removeRecentTile()
+            if event.key == pygame.K_z:
+                # optimise the number redandend tiles
+                Layers[currentSelectedLayer][1].optimise()
+
     if mouse_key[0] :
+    
         # getting the current position of the mouse 
         p = pygame.mouse.get_pos()
         # convert the screen coordinates to world co-ordinates
@@ -323,13 +328,15 @@ def _input(dt,mouse_rel,mouse_key):
         t.color = pointer.color
         if sentToBack:
             Layers[currentSelectedLayer][1].addTileAtStart(t)
+            time.sleep(0.1)
         else:
             Layers[currentSelectedLayer][1].addTile(t)
+            time.sleep(0.1)
     if mouse_key[2]:
         # converting the pointer position to world cordinates
         x,y,z = screenToWorld([pointer.x,pointer.y])
         # checking if the pointer is inside the tile
-        flag = Layers[currentSelectedLayer].checkCollision(x,y)
+        flag = Layers[currentSelectedLayer][1].checkCollision(x,y)
 def pointerUpdate():
     global pointer
 
@@ -396,8 +403,8 @@ cam = camera()
 Layers = []
 # starting the first layer 
 layer_0 = Layer(0)
-# added the default layer object to layers
-Layers.append([1,layer_0,True])
+# added the default layer object to layers [id,layer,display]
+Layers.append([0,layer_0,True])
 currentSelectedLayer = 0
 
 spritesList = list()
@@ -421,6 +428,7 @@ def help():
     + : layer selection 
     l : hide layer 
     n : create new layer 
+    k : send to back
     c : change selected asset 
     v : change selected asset 
     i : toggle the pointer texture 
@@ -428,6 +436,7 @@ def help():
     j : increase pointer width 
     y : decrease poiter height 
     u : decrease pointer width 
+    z : optimise the draw
     e : export layer 
     p : help
     ''')

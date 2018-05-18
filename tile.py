@@ -52,6 +52,7 @@ class Tile(object):
         self.textureEnabled = True
         self.textEnabled = True
         self.physicsEnabled = False
+        self.selected = True
 
     def setImage(self,texture):
         self.texture = texture
@@ -66,5 +67,22 @@ class Tile(object):
         self.y = y
         self.width = width
         self.height = height
-
-t=Tile(0,0,0,45)
+    
+    def equal(self,t):
+        if t.x == self.x:
+            if t.y == self.y:
+                if t.width == self.width:
+                    if t.height == self.height:
+                        if t.textureName == self.textureName:
+                            if t.fx == self.fx:
+                                if t.fy == self.fy:
+                                    return 1
+                                else: return 0
+                            else: return 0    
+                        else: return 0
+                    else: return 0
+                else: return 0
+            else: return 0
+        else: return 0
+if __name__ == "__main__":
+    t=Tile(0,0,0,45)

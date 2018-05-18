@@ -40,14 +40,26 @@ class Layer(object):
         if type == '.xml':
             pass
 
-    def checkCollision(x,y):
+    def checkCollision(self,x,y):
         FlagedTiles = []
         for t in self.tiles:
             if x > t.x and x < t.x+t.width:
                 if y > t.y and y < t.y+t.height:
                     FlagedTiles.append(t)
                     t.textureEnabled = False
+                    t.selected = True
+        print ("Flaged : ",FlagedTiles)
+        print ("Total :",len(self.tiles))
         return FlagedTiles
+    def optimise(self):
+        for t in self.tiles:
+            for t1 in self.tiles:
+                if t.equal(t1):
+                    if id(t) != id(t1): 
+                        print ("Removed :" ,t1, "| ",id(t1))
+                        self.tiles.remove(t1)
+                        print ("Total :",len(self.tiles))
+                        break
 
     def addTile(self,tile):
         self.tiles.append(tile)
@@ -59,14 +71,18 @@ class Layer(object):
     def removeRecentTile(self):
         del self.tiles[-1]
     def _export(self):
+
+        print("Optamizing ...")
+        self.optimise()
+        
         file_ = open("layer_"+str(self.layerCode)+".json","w+")
                    
         string_ = '{"tiles":['
         for t in self.tiles:
-            s = '{"x":'+str(t.x)+',"y":'+str(t.y)+',"w":'+str(t.width)+',"h":'+str(t.height)+',text:anything'
-            s += ',"color":[254,'+str(t.color[0])+','+str(t.color[1])+','+str(t.color[2])+'],"collision":'+str(t.collision)+',"display":'+str(t.display)
-            s += ',"spriteEnabled":'+str(t.textureEnabled)
-            s += ',"sprite":'+str(t.textureName)+',"bitx":'+str(t.fx)+',"bity":'+str(t.fy)+',"bitw":'+str(t.fWidth)+',"bith":'+str(t.fHeight)+',"widthRatio":1,"heightRatio":1}'
+            s = '{"x":'+str(t.x)+',"y":'+str(t.y)+',"w":'+str(t.width)+',"h":'+str(t.height)+',"text":"anything"'
+            s += ',"color":[254,'+str(t.color[0])+','+str(t.color[1])+','+str(t.color[2])+'],"collision":"'+str(t.collision)+'","display":"'+str(t.display)+'"'
+            s += ',"spriteEnabled":"'+str(t.textureEnabled)+'"'
+            s += ',"sprite":"'+str(t.textureName)+'","bitx":'+str(t.fx)+',"bity":'+str(t.fy)+',"bitw":'+str(t.fWidth)+',"bith":'+str(t.fHeight)+',"widthRatio":1,"heightRatio":1}'
             string_ += s+','
         string_ += ']}'
 
