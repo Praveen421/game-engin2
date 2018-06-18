@@ -25,7 +25,7 @@ SOFTWARE.
 '''
 from PIL import Image, ImageDraw
 from tile import *
-import json
+import json,os
 
 class Layer(object):
 
@@ -39,18 +39,36 @@ class Layer(object):
             pass
         if type == '.xml':
             pass
-
+    def translate(self,tx,ty):
+        for t in self.tiles:
+            if t.selected == True:
+                t.x = t.x + tx
+                t.y = t.y + ty
+    def deSelectAll(self):
+        for t in self.tiles:
+            t.selected = False
+    def deleteSelected(self):
+        for t in self.tiles:
+            if t.selected == True :
+                self.tiles.remove(t)
+    def deleteAll(self):
+        for t in self.tiles:
+                self.tiles.remove(t)
     def checkCollision(self,x,y):
         FlagedTiles = []
         for t in self.tiles:
             if x > t.x and x < t.x+t.width:
                 if y > t.y and y < t.y+t.height:
                     FlagedTiles.append(t)
-                    t.textureEnabled = False
+                    #t.textureEnabled = False
                     t.selected = True
         print ("Flaged : ",FlagedTiles)
         print ("Total :",len(self.tiles))
         return FlagedTiles
+    def editText(self,text):
+        for t in self.tiles:
+            if t.selected == True:
+                t.text = text
     def optimise(self):
         for t in self.tiles:
             for t1 in self.tiles:
@@ -60,7 +78,11 @@ class Layer(object):
                         self.tiles.remove(t1)
                         print ("Total :",len(self.tiles))
                         break
-
+    def transform(self,w=0,h=0):
+        for t in self.tiles:
+            if t.selected == True:
+                t.width += w
+                t.height += h
     def addTile(self,tile):
         self.tiles.append(tile)
     
@@ -70,24 +92,56 @@ class Layer(object):
         self.tiles.reverse()
     def removeRecentTile(self):
         del self.tiles[-1]
+
     def _export(self):
 
         print("Optamizing ...")
         self.optimise()
-        
-        file_ = open("layer_"+str(self.layerCode)+".json","w+")
+        preset = input("Enter the preset : ")
+        file_ = open("data\l"+str(preset)+"_layer_"+str(self.layerCode)+".json","w+")
                    
         string_ = '{"tiles":['
         for t in self.tiles:
-            s = '{"x":'+str(t.x)+',"y":'+str(t.y)+',"w":'+str(t.width)+',"h":'+str(t.height)+',"text":"anything"'
+            s = '{"x":'+str(t.x)+',"y":'+str(t.y)+',"w":'+str(t.width)+',"h":'+str(t.height)+',"text":"'+str(t.text)+'"'
             s += ',"color":[254,'+str(t.color[0])+','+str(t.color[1])+','+str(t.color[2])+'],"collision":"'+str(t.collision)+'","display":"'+str(t.display)+'"'
             s += ',"spriteEnabled":"'+str(t.textureEnabled)+'"'
             s += ',"sprite":"'+str(t.textureName)+'","bitx":'+str(t.fx)+',"bity":'+str(t.fy)+',"bitw":'+str(t.fWidth)+',"bith":'+str(t.fHeight)+',"widthRatio":1,"heightRatio":1}'
             string_ += s+','
+        
         string_ += ']}'
 
         print (string_)
         file_.write(string_)
         file_.close()
     def _import(self):
-        pass
+        path = os.getcwd()
+        #path = os.path.join(path,"data")
+        #path = os.path.join(path,"layer_"+str(self.layerCode)"+".json")
+        file_ = open(path+"\layer_"+str(self.layerCode)+".json","r+") 
+        #file_ = open("data\\text.txt","r") 
+
+        # reading the file 
+        f_data = file_.read()
+        # parsing the json file 
+        fd = json.loads(f_data)
+        # deleting all other tiles of the layer
+        self.deleteAll()
+
+        for t in fd['tiles']:
+            tile = Tile(t['x'],t['y'],t['w'],t['h'])
+            #t.setImage(pointer.image)
+            tile.setFrame(t['bitx'],t['bity'],t['bitw'],t['bith'])
+            tile.textureName = t['sprite']
+            if t['spriteEnabled'] == "True":
+                tile.textureEnabled = True
+            else:
+                tile.textureEnabled = False
+            print(tile.textureEnabled,tile.textureName,t['spriteEnabled'])
+            tile.color = [254,t['color'][1],t['color'][2],t['color'][3]]         
+            self.tiles.append(tile)
+            
+
+
+
+                   
+        

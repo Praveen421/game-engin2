@@ -49,6 +49,7 @@ class Pointer():
         self.textureEnabled = True
         self.textEnabled = True
         self.physicsEnabled = False
+        self.selected = True
     def setImage(self,image):
         self.image = image
     def setPos(self,x,y):

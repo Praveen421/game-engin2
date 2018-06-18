@@ -70,6 +70,13 @@ def display():
 
     pygame.draw.rect(screen,(119, 121, 119),(int(0-cam.pos[0]),int(0-cam.pos[1]),int(12000-cam.pos[0]),int(550-cam.pos[1])))
 
+    
+    for i in range(0,800,50):
+        pygame.draw.line(screen,(100,100,100),(0-cam.pos[0],i-cam.pos[1]),(12000-cam.pos[0],i-cam.pos[1]),1)
+       
+    for i in range(0,12000,50):
+        pygame.draw.line(screen,(100,100,100),(i-cam.pos[0],0-cam.pos[1]),(i-cam.pos[0],800-cam.pos[1]),1)
+        
     if sentToBack:
         if pointer.textureEnabled:
             screen.blit(convertPILtoPygame(pointer.image),(int(pointer.x),int(pointer.y)))
@@ -218,7 +225,15 @@ def assetsLoader():
             assets.append([sprite[1].crop(r47.get()),r47,part(sprite[2])])
             
             
- 
+def ImageSet(t):
+    global assets
+    for asset in assets:
+        if asset[1].x == t.fx:
+           if asset[1].y == t.fy:
+               if asset[1].w == t.fWidth:
+                   if asset[1].h == t.fHeight:
+                      return asset[0]
+    #print(asset[1].x,"|",t.x)
  
 def convertPILtoPygame(image):
     mode = image.mode
@@ -263,15 +278,19 @@ def _input(dt,mouse_rel,mouse_key):
             if event.key == pygame.K_h:
                 # increase pointer height
                 pointer.height += 10
+                Layers[currentSelectedLayer][1].transform(0,10)
             if event.key == pygame.K_j:
                 # increase the pointer width
                 pointer.width += 10
+                Layers[currentSelectedLayer][1].transform(10,0)
             if event.key == pygame.K_y:
                 # decrease pointer height
                 pointer.height -= 10
+                Layers[currentSelectedLayer][1].transform(0,-10)
             if event.key == pygame.K_u:
                 # decrease the pointer width
                 pointer.width -= 10
+                Layers[currentSelectedLayer][1].transform(-10,0)
             if event.key == pygame.K_i:
                 # toggle the pointer texture
                 if pointer.textureEnabled:
@@ -296,6 +315,9 @@ def _input(dt,mouse_rel,mouse_key):
                     Layers[currentSelectedLayer][2] = False
                 else:
                     Layers[currentSelectedLayer][2] = True
+            if event.key == pygame.K_b:
+                t = input("Enter the Text")
+                Layers[currentSelectedLayer][1].editText(t)
             if event.key == pygame.K_KP_PLUS:
                 # increse the current layer number
                 if currentSelectedLayer < len(Layers)-1:
@@ -315,6 +337,25 @@ def _input(dt,mouse_rel,mouse_key):
                 # optimise the number redandend tiles
                 Layers[currentSelectedLayer][1].optimise()
 
+            if event.key == pygame.K_a:
+                Layers[currentSelectedLayer][1].translate(-1,0)
+            if event.key == pygame.K_d:
+                Layers[currentSelectedLayer][1].translate(1,0)
+            if event.key == pygame.K_w:
+                Layers[currentSelectedLayer][1].translate(0,-1)
+            if event.key == pygame.K_s:
+                Layers[currentSelectedLayer][1].translate(0,1)
+
+            if event.key == pygame.K_r:
+                Layers[currentSelectedLayer][1].deSelectAll()
+            if event.key == pygame.K_x:
+                Layers[currentSelectedLayer][1].deleteSelected()
+            if event.key == pygame.K_m:
+                Layers[currentSelectedLayer][1]._import()
+                
+                for t in Layers[currentSelectedLayer][1].tiles:
+                    t.setImage(ImageSet(t))
+
     if mouse_key[0] :
     
         # getting the current position of the mouse 
@@ -325,6 +366,7 @@ def _input(dt,mouse_rel,mouse_key):
         t.setImage(pointer.image)
         t.setFrame(pointer.fx,pointer.fy,pointer.fWidth,pointer.fHeight)
         t.textureName = pointer.textureName
+        t.textureEnabled = pointer.textureEnabled
         t.color = pointer.color
         if sentToBack:
             Layers[currentSelectedLayer][1].addTileAtStart(t)

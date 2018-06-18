@@ -40,7 +40,7 @@ class Tile(object):
         # color
         self.color = []
         # text
-        self.text = ""
+        self.text = "editText"
         # texture
         self.texture = Image
         self.textureName = ''
@@ -84,5 +84,8 @@ class Tile(object):
                 else: return 0
             else: return 0
         else: return 0
+
+
+        
 if __name__ == "__main__":
     t=Tile(0,0,0,45)
