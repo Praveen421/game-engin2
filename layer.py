@@ -115,9 +115,10 @@ class Layer(object):
         file_.close()
     def _import(self):
         path = os.getcwd()
+        preset = input("Enter the preset : ")
         #path = os.path.join(path,"data")
         #path = os.path.join(path,"layer_"+str(self.layerCode)"+".json")
-        file_ = open(path+"\layer_"+str(self.layerCode)+".json","r+") 
+        file_ = open(path+"\data\l"+str(preset)+"_layer_"+str(self.layerCode)+".json","r+") 
         #file_ = open("data\\text.txt","r") 
 
         # reading the file 
