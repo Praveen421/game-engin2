@@ -9,7 +9,9 @@ https://realpython.com/python-application-layouts/
 
 ** Python to js**
 http://www.pygame.org/project-Pyjsdl-2888-4709.html
+# 1
 http://pyjs.org/GettingHelp.html
+# 2
 https://gatc.ca/projects/
 
 ** Game engine Architecture**
