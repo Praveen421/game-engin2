@@ -394,6 +394,7 @@ def pointerUpdate():
 
 
 def readSprites():
+    import paths.py
     # get the cuurent directory
     path = os.getcwd()
     
