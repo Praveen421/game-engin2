@@ -397,17 +397,17 @@ def readSprites():
     # get the cuurent directory
     path = os.getcwd()
     
-    assetsDir = "\\assets"
+    assetsDir = "\\resourses"
     spritesDir = "\\sprites"
 
     sprites = os.listdir(path+assetsDir+spritesDir) 
     #print path+assetsDir+spritesDir
 
     print (sprites)
-    s0 = Image.open("assets/sprites/tileset.png")
+    s0 = Image.open("resourses/sprites/tileset.png")
     id = 0
     for name in sprites:
-        s0 = Image.open("assets/sprites/"+name)
+        s0 = Image.open("resourses/sprites/"+name)
         spritesList.append([id,s0,name])
 
 # initilize the pygame

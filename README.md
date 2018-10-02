@@ -13,7 +13,8 @@ http://www.pygame.org/project-Pyjsdl-2888-4709.html
 http://pyjs.org/GettingHelp.html
 # 2
 https://gatc.ca/projects/
-
+** Node editor **
+https://github.com/lukaszlipski/SphereTracingEditor/blob/master/SphereTracingEditor/GraphConnections.py
 ** Game engine Architecture**
 https://www.slideshare.net/AttilaJenei/game-engine-architecture-34006558?from_action=save
 
