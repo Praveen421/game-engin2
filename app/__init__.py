@@ -42,13 +42,18 @@ def load_plugins():
 #         plugin_main = os.listdir(plugins_path+p)
 #         os.system('cd '+plugins_path+p)
 #         os.system(cmd)
-#         os.system(cmd)
+#         os.system(cmd)          # showConfig   addConfig
 #         d.log("cmd",'cd '+plugins_path+p)
 
 def execute_plugins():
     global plugins_names,plugins
-    for p in plugins_names:
+    '''for p in plugins_names:
         PLUGIN_NAME = 'plugins.'+p+'.__init__'
+        meta = importlib.import_module(PLUGIN_NAME,'.')
+        meta'''
+    
+    for p in plugins_names:
+        PLUGIN_NAME = 'plugins.'+p+'.tile'
         d.log("msg",PLUGIN_NAME)
         plugins.append(importlib.import_module(PLUGIN_NAME,'.'))
 
