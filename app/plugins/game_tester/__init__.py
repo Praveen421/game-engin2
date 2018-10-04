@@ -13,3 +13,6 @@ class Plugin:
         print('Level designer :',args,kwargs)
     def run(self):
         print("run")
+    def meta(self):
+        return load_sequence
+
