@@ -22,9 +22,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 '''
 import pygame,math,time,os
-from layer import *
-from pointer import *
-from camera import *
+import importlib
+#from layer import *
+#from pointer import *
+#from camera import *
 
 
 '''
@@ -306,7 +307,7 @@ def _input(dt,mouse_rel,mouse_key):
                     sentToBack = True
             if event.key == pygame.K_n:
                 id = len(Layers)
-                l = Layer(id)
+                l = Layer_module.Layer(id)
                 Layers.append([id,l,True])
                 currentSelectedLayer = id
                 print ("Layer Selected : ", currentSelectedLayer)
@@ -411,6 +412,20 @@ def readSprites():
         s0 = Image.open("resourses/sprites/"+name)
         spritesList.append([id,s0,name])
 
+
+###############################################################
+###     importing modules
+###############################################################
+
+# importing the Layer module
+Layer_module = importlib.import_module('layer','.')
+# importing the Camera module
+Camera_module = importlib.import_module('camera','.')
+# importing the Pointer module
+Pointer_module = importlib.import_module('pointer','.')
+
+
+
 # initilize the pygame
 pygame.init()
 # screen height and width
@@ -420,7 +435,7 @@ cx,cy,cz = width/2,height/2, -5
 # loading the icon  
 #pygame.display.set_icon(pygame.image.load('Icon.png'))
 # init the name of the window
-pygame.display.set_caption("Game engin -2018")
+pygame.display.set_caption("PyTrack | v1.0.1")
 # initilise the clock
 clock = pygame.time.Clock()
 # initilize the screen
@@ -432,20 +447,20 @@ pygame.display.update()
 color = colors()
 
 # initilise the main camera
-cam = camera((-0,0,30))
+cam = Camera_module.camera((-0,0,30))
 # world screen scales
 pixelFactor = 200/cam.pos[2]
 scalex,scaley = -width/pixelFactor,-height/pixelFactor
 
 pos = pygame.mouse.get_pos()
-pointer = Pointer(pos[0],pos[1],100,100)
+pointer = Pointer_module.Pointer(pos[0],pos[1],100,100)
 #pointer.textureEnabled = False
 # initlizing the camera 
-cam = camera()
+cam = Camera_module.camera()
 # initilizing the layers 
 Layers = []
 # starting the first layer 
-layer_0 = Layer(0)
+layer_0 = Layer_module.Layer(0)
 # added the default layer object to layers [id,layer,display]
 Layers.append([0,layer_0,True])
 currentSelectedLayer = 0
