@@ -1,12 +1,3 @@
-<<<<<<< HEAD
-
-
-import plugins.level_designer as p
-
-
-
-
-=======
 '''
 MIT License
 
@@ -97,4 +88,3 @@ def main():
 
 if __name__ == "__main__":
     main()
->>>>>>> e55b006a9d516228913e7a1dd3603a2f04366ea2
