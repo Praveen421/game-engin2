@@ -49,21 +49,34 @@ def execute_plugins():
     global plugins_names,plugins
         
     for p in plugins_names:
+<<<<<<< HEAD
         PLUGIN_NAME = 'plugins.'+p+'.__init__'
         d.log("msg",PLUGIN_NAME)
         plugins.append(importlib.import_module(PLUGIN_NAME,'.'))
+=======
+        PLUGIN_NAME = 'plugins.'+p+'.main'
+        d.log("msg",PLUGIN_NAME)
+        plugins.append(importlib.import_module(PLUGIN_NAME,'.'))
+        
+        '''
+        ## load testing
+>>>>>>> e55b006a9d516228913e7a1dd3603a2f04366ea2
         temp = importlib.import_module(PLUGIN_NAME,'.')
         k = temp.Plugin("ju",key=67)
         modules = k.meta()
         for m in modules:
             print(importlib.import_module('plugins.'+p+'.'+m,'.'))
+<<<<<<< HEAD
+=======
+        '''
+>>>>>>> e55b006a9d516228913e7a1dd3603a2f04366ea2
 
 
 def main():
     global plugins
     load_plugins()
     execute_plugins()
-    m = plugins[0].Plugin("hj",key=123)
+    #m = plugins[0].Plugin("hj",key=123)
     
 ### globals
 d = debuger()

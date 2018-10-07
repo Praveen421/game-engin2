@@ -23,7 +23,7 @@ SOFTWARE.
 
 '''
 from PIL import Image
-from rect import *
+import importlib
 
 
 class Pointer():

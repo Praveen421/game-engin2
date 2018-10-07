@@ -21,6 +21,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 '''
+from PIL import Image
 import pygame,math,time,os
 import importlib
 #from layer import *
@@ -37,7 +38,7 @@ class colors(object):
     def __init__(self):
         self.WHITE = (254,254,254)
         self.BLACK = (0,0,0)
-        self.RED = (254,0,0)
+        self.RED = (254,0,0,128)
         self.BLUE = (0,0,254)
         self.GREEN = (0,254,0)
         self.GRAY = (100,100,100)
@@ -51,7 +52,7 @@ class Designer():
         ###############################################################
         ###     importing modules
         ###############################################################
-
+        print('Game Tester :',args,kwargs)
         # importing the Layer module
         self.Layer_module = args[0]
         # importing the Camera module
@@ -78,9 +79,12 @@ class Designer():
         pygame.display.set_caption("PyTrack | v1.0.1")
         # initilise the clock
         self.clock = pygame.time.Clock()
-        # initilize the screen
-        self.screen = pygame.display.set_mode((width,height),pygame.DOUBLEBUF)
-        screen.fill(pygame.Color(255,255,255))
+        # initilize the screen 
+        # ,pygame.DOUBLEBUF,pygame.SRCALPHA
+        self.screen = pygame.display.set_mode((self.width,self.height),pygame.SRCALPHA, 32)
+        #self.screen.set_alpha(254)
+        #print(self.screen.get_alpha())
+        self.screen.fill(pygame.Color(255,255,255))
         pygame.display.init()
         pygame.display.update()
         # graphics mode
@@ -99,7 +103,7 @@ class Designer():
         # initilizing the layers 
         self.Layers = []
         # starting the first layer 
-        self.layer_0 = self.Layer_module.Layer(0)
+        self.layer_0 = self.Layer_module.Layer(0,self.Tile_module)
         # added the default layer object to layers [id,layer,display]
         self.Layers.append([0,self.layer_0,True])
         self.currentSelectedLayer = 0
@@ -141,7 +145,7 @@ class Designer():
     def display(self):
 
         pygame.draw.rect(self.screen,(119, 121, 119),(int(0-self.cam.pos[0]),int(0-self.cam.pos[1]),int(12000-self.cam.pos[0]),int(550-self.cam.pos[1])))
-
+        pygame.draw.rect(self.screen, (254,0,0,12), pygame.Rect(0, 0, 100, 50))
         
         for i in range(0,800,50):
             pygame.draw.line(self.screen,(100,100,100),(0-self.cam.pos[0],i-self.cam.pos[1]),(12000-self.cam.pos[0],i-self.cam.pos[1]),1)
@@ -160,7 +164,7 @@ class Designer():
                     for t in layer[1].tiles:        
                         x,y = self.worldToScreen([t.x,t.y,50])
                         if t.textureEnabled:
-                            screen.blit(self.convertPILtoPygame(t.texture),(int(x),int(y)))
+                            self.screen.blit(self.convertPILtoPygame(t.texture),(int(x),int(y)))
                         else:
                             pygame.draw.rect(self.screen,self.pointer.color,(int(x),int(y),int(t.width),int(t.height)))
                 
@@ -170,16 +174,16 @@ class Designer():
                     for t in layer[1].tiles:
                         x,y = self.worldToScreen([t.x,t.y,50])
                         if t.textureEnabled:
-                            screen.blit(self.convertPILtoPygame(t.texture),(int(x),int(y)))
+                            self.screen.blit(self.convertPILtoPygame(t.texture),(int(x),int(y)))
                         else:
                             pygame.draw.rect(self.screen,self.pointer.color,(int(x),int(y),int(t.width),int(t.height)))
                     
             if self.pointer.textureEnabled:
-                screen.blit(self.convertPILtoPygame(self.pointer.image),(int(self.pointer.x),int(self.pointer.y)))
+                self.screen.blit(self.convertPILtoPygame(self.pointer.image),(int(self.pointer.x),int(self.pointer.y)))
             else:
                 pygame.draw.rect(self.screen,self.pointer.color,(int(self.pointer.x),int(self.pointer.y),int(self.pointer.width),int(self.pointer.height)))
             
-    def part(str):
+    def part(self,str):
         name,ext = str.split('.')
         return name
 
@@ -299,10 +303,10 @@ class Designer():
     def ImageSet(self,t):
         for asset in self.assets:
             if asset[1].x == t.fx:
-            if asset[1].y == t.fy:
-                if asset[1].w == t.fWidth:
-                    if asset[1].h == t.fHeight:
-                        return asset[0]
+                if asset[1].y == t.fy:
+                    if asset[1].w == t.fWidth:
+                        if asset[1].h == t.fHeight:
+                            return asset[0]
         #print(asset[1].x,"|",t.x)
     
     def convertPILtoPygame(self,image):
@@ -331,6 +335,7 @@ class Designer():
                 if event.key == pygame.K_RCTRL:
                     pass
                 if event.key == pygame.K_c:
+                    # change the asset
                     if self.currentPointerAssets < len(self.assets):
                         self.currentPointerAssets = self.currentPointerAssets+1
                     if self.currentPointerAssets >= len(self.assets):
@@ -339,6 +344,7 @@ class Designer():
                     self.pointer.setFrame(self.assets[self.currentPointerAssets][1])
                     self.pointer.textureName = self.assets[self.currentPointerAssets][2]
                 if event.key == pygame.K_v:
+                    # change the asset
                     if self.currentPointerAssets != 0:
                         self.currentPointerAssets =self.currentPointerAssets -1
                     self.pointer.setImage(self.assets[self.currentPointerAssets][0])
@@ -367,24 +373,31 @@ class Designer():
                     else:
                         self.pointer.textureEnabled = True
                 if event.key == pygame.K_e:
-                    self.Layers[currentSelectedLayer][1]._export()
+                    # export the layer
+                    self.Layers[self.currentSelectedLayer][1]._export()
                 if event.key == pygame.K_k:
+                    # send to back toggle
                     if self.sentToBack:
                         self.sentToBack = False
                     else:
                         self.sentToBack = True
                 if event.key == pygame.K_n:
-                    id = len(Layers)
-                    l = self.Layer_module.Layer(id)
+                    # create new layer
+                    print('ok')
+                    id = len(self.Layers)
+                    l = self.Layer_module.Layer(id,self.Tile_module)
+                    print('ok')
                     self.Layers.append([id,l,True])
                     self.currentSelectedLayer = id
                     print ("Layer Selected : ", self.currentSelectedLayer)
                 if event.key == pygame.K_l:
+                    # hide and un-hide the content of the layer
                     if self.Layers[self.currentSelectedLayer][2]:
                         self.Layers[self.currentSelectedLayer][2] = False
                     else:
                         self.Layers[self.currentSelectedLayer][2] = True
                 if event.key == pygame.K_b:
+                    # giving id to the tiles 
                     t = input("Enter the Text")
                     self.Layers[self.currentSelectedLayer][1].editText(t)
                 if event.key == pygame.K_KP_PLUS:
@@ -431,7 +444,7 @@ class Designer():
             p = pygame.mouse.get_pos()
             # convert the screen coordinates to world co-ordinates
             x,y,z = self.screenToWorld([self.pointer.x,self.pointer.y])
-            t = Tile(x,y,self.pointer.width,self.pointer.height)
+            t = self.Tile_module.Tile(x,y,self.pointer.width,self.pointer.height)
             t.setImage(self.pointer.image)
             t.setFrame(self.pointer.fx,self.pointer.fy,self.pointer.fWidth,self.pointer.fHeight)
             t.textureName = self.pointer.textureName
@@ -500,9 +513,9 @@ class Designer():
     def main(self):
         while True:
         
-            self.screen.fill(color.BLACK)
+            self.screen.fill(self.color.BLACK)
             # setting the smallest time variation
-            dt = float(clock.tick(60))/10
+            dt = float(self.clock.tick(60))/10
             self.clock.tick(60)
             # pointer update
             self.pointerUpdate()
