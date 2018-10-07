@@ -1,15 +1,23 @@
-# game-engin2
-the game engine for cross platform game development and designing 
+# PyTrack
+[![N|Solid](https://cldup.com/dTxpPi9lDf.thumb.png)](https://nodesource.com/products/nsolid)
+
+[![Build Status](https://travis-ci.org/joemccann/dillinger.svg?branch=master)](https://travis-ci.org/joemccann/dillinger)
+
+PyTrack game engine for cross platform game development and designing 
+
+  - Type some Markdown on the left
+  - See HTML in the right
+  - Magic
 
 
-** Project Structre **
+### Project Structre 
 ```sh
 https://www.gameenginebook.com/toc.html
 
 https://realpython.com/python-application-layouts/
 ```
 
-** Python to js**
+### Python to js
 ```sh
 http://www.pygame.org/project-Pyjsdl-2888-4709.html
 ```
@@ -21,11 +29,17 @@ http://pyjs.org/GettingHelp.html
 ```sh
 https://gatc.ca/projects/
 ```
-** Node editor **
+### Node editor 
+```sh
 https://github.com/lukaszlipski/SphereTracingEditor/blob/master/SphereTracingEditor/GraphConnections.py
-** Game engine Architecture**
+```
+### Game engine Architecture
+```sh
 https://www.slideshare.net/AttilaJenei/game-engine-architecture-34006558?from_action=save
-** python tuts **
+```
+### python tuts 
+```sh
 https://www.youtube.com/watch?v=cbot48lckOs
+```
 
 
