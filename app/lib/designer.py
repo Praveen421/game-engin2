@@ -383,10 +383,8 @@ class Designer():
                         self.sentToBack = True
                 if event.key == pygame.K_n:
                     # create new layer
-                    print('ok')
                     id = len(self.Layers)
                     l = self.Layer_module.Layer(id,self.Tile_module)
-                    print('ok')
                     self.Layers.append([id,l,True])
                     self.currentSelectedLayer = id
                     print ("Layer Selected : ", self.currentSelectedLayer)
