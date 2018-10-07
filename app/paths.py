@@ -24,9 +24,10 @@ SOFTWARE.
 '''
 import os
 
-# get the cuurent directory
+# get the cuurent directory ABSPATH
 path = os.getcwd()
 # list of modules paths
+libs_path       = path+'\\lib\\'
 plugins_path    = path+'\\plugins\\'
 adons_path      = path+'\\adons\\'
 data_path       = path+'\\data\\'

@@ -28,10 +28,11 @@ import json,os,importlib
 
 class Layer(object):
 
-    def __init__(self,layerCode):
+    def __init__(self,*args):
         self.tiles = []
         self.background = Image
-        self.layerCode = layerCode
+        self.layerCode = args[0]
+        self.Tile_module = args[1]
     
     def createLayer(self,layer,type):
         if type == '.json':
@@ -113,8 +114,7 @@ class Layer(object):
         file_.write(string_)
         file_.close()
     def _import(self):
-        # importing the tile module
-        Tile_module = importlib.import_module('tile','.')
+        
         path = os.getcwd()
         preset = input("Enter the preset : ")
         #path = os.path.join(path,"data")
@@ -130,7 +130,7 @@ class Layer(object):
         self.deleteAll()
 
         for t in fd['tiles']:
-            tile = Tile_module.Tile(t['x'],t['y'],t['w'],t['h'])
+            tile = self.Tile_module.Tile(t['x'],t['y'],t['w'],t['h'])
             #t.setImage(pointer.image)
             tile.setFrame(t['bitx'],t['bity'],t['bitw'],t['bith'])
             tile.textureName = t['sprite']
