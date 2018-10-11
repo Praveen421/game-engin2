@@ -1,3 +1,8 @@
-x{
-    color:rgb(119, 121, 119)
-}
+.color1{color:rgb(119, 121, 119)}
+
+
+.color2{color:#0e7c7b;background :rgb(14, 124, 123);}
+.color3{color:#0c1821;background :rgb(12, 24, 33);}
+.color4{color:#1b2a41;background :rgb(27, 42, 65);}
+.color5{color:#324a5f;background :rgb(50, 74, 95);}
+.color6{color:#ccc9dc;background :rgb(204, 201, 220);}
