@@ -51,9 +51,11 @@ class Node():
     
     def set_output_pin(self,id):
         self.output_pins.append(id)
+    def set_x(x):
+        self.x =x
+    def set_y(y):
+        self.y =y
     
-    def main(self):
-        pass
 
 
 class Entity():

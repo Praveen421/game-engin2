@@ -28,4 +28,10 @@ https://github.com/alejandroautalan/pygubu
 
 https://github.com/lukaszlipski/SphereTracingEditor
 
+### kiwi.js
+http://www.kiwijs.org
+
+### object tracker wxDC
+http://www.lprp.fr/soft/rphoto/rphoto_en.php3
+
 

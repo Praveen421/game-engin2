@@ -25,10 +25,10 @@ SOFTWARE.
 from paths import *
 import os,importlib
 from debuger import *
-import tkinter as tk
-from tkinter import ttk
-import views.view_main as view
-
+#import tkinter as tk
+#from tkinter import ttk
+import views.view_node_editor as view
+import wx
 
 def part(str):
     # split the tring by '.'
@@ -76,8 +76,8 @@ libs  = list()
 
 def main():
     load_lib()
-    '''
-    designer = libs[1].Designer(find_module('layer'),
+
+    '''designer = libs[1].Designer(find_module('layer'),
             find_module('camera'),
             find_module('pointer'),
             find_module('rect'),
@@ -85,11 +85,11 @@ def main():
     #designer.main()
     #create_new_project()
 
-    app = view.UI(find_module('node'))
-    app.top_menu()
-    app.create_node_editor()
-    app.customLoop()
-    app.run()
+
+    
+    app = wx.App()
+    view.NodeEditor(None,"Node Editor ",find_module('node'))
+    app.MainLoop()
 
 if __name__ == "__main__":
         main()

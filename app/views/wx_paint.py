@@ -26,13 +26,12 @@ SOFTWARE.
 
 import wx
 
-class Example(wx.Frame):
+class NodeEditor(wx.Frame):
     def __init__(self, parent, title):
-        super(Example, self).__init__(parent, title=title, 
+        super(NodeEditor, self).__init__(parent, title=title, 
             size=(250, 550))
 
         self.Bind(wx.EVT_PAINT, self.OnPaint)
-
         self.Centre()
         self.Show()
 
@@ -45,5 +44,5 @@ class Example(wx.Frame):
 
 if __name__ == '__main__':
     app = wx.App()
-    Example(None, 'Line')
+    NodeEditor(None, 'Node Editor')
     app.MainLoop()

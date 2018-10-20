@@ -45,6 +45,9 @@ class UI():
         self.tab1 = ttk.Frame(self.tab_control)
         self.tab_control.add(self.tab1,text="Designer")
         self.tab_control.pack(expand=1,fill="both")
+        os.environ['SDL_WINDOWID'] = str(self.win_left.winfo_id())
+        os.environ['SDL_VIDEODRIVER'] = 'windib'
+
         self.tab2 = ttk.Frame(self.tab_control)
         self.tab_control.add(self.tab2,text="Node Editor")
         self.tab_control.pack(expand=1,fill="both")
@@ -64,9 +67,6 @@ class UI():
             self.canvas.create_rectangle([n.x,n.y-25,n.x+n.width,n.y], fill = '#324a5f')
             self.canvas.create_text((n.x+10,n.y-20),anchor=tk.NW,fill="#0e7c7b",text=n.title)
     
-    def CreateNodesMenu(self, Pos):
-        self.NodesMenu = GraphNodesMenu.GraphNodesMenu(self, Pos)
-       
     def create_node(self,name,x,y,width,height):
         n = self.node_module.Node(name,x,y,width,height)
         self.Nodes.append(n)
@@ -78,6 +78,7 @@ class UI():
         self.canvas.update()
 
     def create_popup_menu(self,x,y,height,width):
+        
         self.popupMenu = tk.Frame(self.canvas, bg='#1b2a41')
         self.popupMenu.pack()
         self.popupMenu.configure(width=width,height=height)
@@ -103,6 +104,7 @@ class UI():
         self.listBox.bind('<<ListboxSelect>>', lambda event: self.NodesMenuSelected(self.listBox.selection_get()))
     
     def delete_popup_menu(self):
+        self.canvas.delete(tk.ALL)
         self.popupMenu.destroy()
     
     def NodesMenuSelected(self, selection):
@@ -157,6 +159,11 @@ class UI():
     def GraphLeftMousePressed(self,event):
         print('Graph-LeftMousePressed')
         self.delete_popup_menu()
+        x,y = self.GetMousePos()
+        # selected node is 0
+        self.Nodes[0].set_x(x)
+        self.Nodes[0].set_x(y)
+        
 
     def GraphLeftMouseReleased(self,event):
         print('Graph-LeftMouseReleased')
@@ -180,7 +187,6 @@ class UI():
 
     def GlobalSettingsBtnClicked(self,event):
         print('GlobalSettingsBtnClicked')
-
     
     def top_menu(self):
                 
@@ -238,18 +244,21 @@ class UI():
             self.NodesMenu = None
     
     def run(self):
-        #self.win.after(16,self.customLoop)
-        self.win.mainloop()
+        self.canvas.after(1,self.customLoop)
+        #self.win.mainloop()
    
     def about(self):
         print ('about the game engine')
         
     def customLoop(self):
+
         self.create_node("New node",100,100,80,80)
         self.create_node("New 1",320,200,80,80)
-        self.displayNodes()
-        self.InitEvents()
+        while True:
+            self.displayNodes()
+            self.InitEvents()
 
-        #self.win.after(16,self.customLoop)
+            
+            self.canvas.update()
 
 
