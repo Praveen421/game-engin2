@@ -25,8 +25,10 @@ SOFTWARE.
 from paths import *
 import os,importlib
 from debuger import *
-
-
+#import tkinter as tk
+#from tkinter import ttk
+import views.view_node_editor as view
+import wx
 
 def part(str):
     # split the tring by '.'
@@ -49,17 +51,20 @@ def load_lib():
     # debug message
     d.log("Loader",lib_names)
 
-
-
-
 def find_module(str):
     global lib_names,libs
 
     k= [i for i in range(len(lib_names)) if lib_names[i]==str]
     return libs[k[0]]
+
+def create_new_project():
+    # start the new project window     
+    newDialog = importlib.import_module('dialog_new_project','.')
+    newDialogObject =  newDialog.Project()
+    newDialogObject.startWindow()
     
-
-
+        
+    
 
 #######################################################
 ### globals
@@ -71,20 +76,20 @@ libs  = list()
 
 def main():
     load_lib()
-    '''
-    mods = [find_module('layer'),
-            find_module('camera'),
-            find_module('pointer'),
-            find_module('rect'),
-            find_module('tile')
-            ]
-    '''
+
     designer = libs[1].Designer(find_module('layer'),
             find_module('camera'),
             find_module('pointer'),
             find_module('rect'),
             find_module('tile'),path=path)
     designer.main()
+    #create_new_project()
+
+
+    
+    app = wx.App()
+    view.NodeEditor(None,"Node Editor ",find_module('node'))
+    app.MainLoop()
 
 if __name__ == "__main__":
-    main()
+        main()

@@ -103,7 +103,7 @@ class Designer():
         # initilizing the layers 
         self.Layers = []
         # starting the first layer 
-        self.layer_0 = self.Layer_module.Layer(0,self.Tile_module)
+        self.layer_0 = self.Layer_module.Layer(0,self.Tile_module,self.ABSPATH)
         # added the default layer object to layers [id,layer,display]
         self.Layers.append([0,self.layer_0,True])
         self.currentSelectedLayer = 0
@@ -383,10 +383,8 @@ class Designer():
                         self.sentToBack = True
                 if event.key == pygame.K_n:
                     # create new layer
-                    print('ok')
                     id = len(self.Layers)
-                    l = self.Layer_module.Layer(id,self.Tile_module)
-                    print('ok')
+                    l = self.Layer_module.Layer(id,self.Tile_module,self.ABSPATH)
                     self.Layers.append([id,l,True])
                     self.currentSelectedLayer = id
                     print ("Layer Selected : ", self.currentSelectedLayer)

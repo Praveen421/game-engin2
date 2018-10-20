@@ -43,3 +43,19 @@ https://www.youtube.com/watch?v=cbot48lckOs
 ```
 
 
+
+
+https://github.com/alejandroautalan/pygubu
+
+
+
+### kiwi.js
+http://www.kiwijs.org
+
+### object tracker wxDC
+http://www.lprp.fr/soft/rphoto/rphoto_en.php3
+
+
+https://github.com/lukaszlipski/SphereTracingEditor
+
+

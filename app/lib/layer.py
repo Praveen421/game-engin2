@@ -33,6 +33,7 @@ class Layer(object):
         self.background = Image
         self.layerCode = args[0]
         self.Tile_module = args[1]
+        self.ABSPATH = args[2]
     
     def createLayer(self,layer,type):
         if type == '.json':
@@ -98,7 +99,7 @@ class Layer(object):
         print("Optamizing ...")
         self.optimise()
         preset = input("Enter the preset : ")
-        file_ = open("data\l"+str(preset)+"_layer_"+str(self.layerCode)+".json","w+")
+        file_ = open(self.ABSPATH+"data\l"+str(preset)+"_layer_"+str(self.layerCode)+".json","w+")
                    
         string_ = '{"tiles":['
         for t in self.tiles:
@@ -119,7 +120,7 @@ class Layer(object):
         preset = input("Enter the preset : ")
         #path = os.path.join(path,"data")
         #path = os.path.join(path,"layer_"+str(self.layerCode)"+".json")
-        file_ = open(path+"\data\l"+str(preset)+"_layer_"+str(self.layerCode)+".json","r+") 
+        file_ = open(self.ABSPATH+"\data\l"+str(preset)+"_layer_"+str(self.layerCode)+".json","r+") 
         #file_ = open("data\\text.txt","r") 
 
         # reading the file 

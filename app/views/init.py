@@ -149,7 +149,7 @@ class MainFrame ( wx.Frame ):
                 self.load = np.loadtxt(path)
                 self.x = self.load[0,:]
                 self.y = self.load[1,:]
-                print self.x
+                print (self.x)
                 dlg2 = wx.MessageDialog( self, u"载入数据成功\nX=" + str(self.x) + "\nY=" + str(self.y), u"载入信息", wx.OK)
                 dlg2.ShowModal()
                 dlg2.Destroy()
