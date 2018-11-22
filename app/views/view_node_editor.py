@@ -16,14 +16,78 @@ Copyright {2017} {siddhartha singh | sidd5sci@gmail.com}
 
 
 import wx
+import wx.aui
+import os
+import threading
+global pygame # when we import it, let's keep its proper name!
+global pygame_init_flag
+pygame_init_flag = False
+from pygame.locals import *
 
-class NodeEditor(wx.Frame):
+import sys; sys.path.insert(0, "..")
+
+
+
+class MainWindow(wx.aui.AuiMDIParentFrame):
     def __init__(self, parent, title,*args):
-        super(NodeEditor, self).__init__(parent, title=title,size=(550, 550))
+        # super(NodeEditor, self).__init__(parent, title=title,size=(550, 550))
 
+        wx.aui.AuiMDIParentFrame.__init__(self, parent, -1,
+                                          title="AuiMDIParentFrame",
+                                          size=(640,480),
+                                          style=wx.DEFAULT_FRAME_STYLE)
+        self.node_module = args[0]
+        self.designer = args[1]
+        self.count = 0
+        
+        self.initEditor()
+    
+    def initEditor(self):
+                
+        #draw_button = wx.Button(self, label="Press Me")
+        #self.Bind(wx.EVT_BUTTON, self.OnButtonPressed, draw_button)
+        mb = self.MakeMenuBar()
+        self.SetMenuBar(mb)
+        self.CreateStatusBar()
+        self.Maximize(True)
+        self.Centre()
+        self.Show()
+    
+    def onNewChild(self, evt):
+        self.count += 1
+        child = ChildFrameSDL(self, self.count,"sdl",self.designer)
+        child.Show()
+
+    def onDoClose(self, evt):
+        self.Close()
+    
+    def onNewNode(self,evt):
+        self.count += 1
+        child = ChildFrameSDL(self, self.count,"node",self.node_module)
+        child.Show()
+
+    def MakeMenuBar(self):
+        mb = wx.MenuBar()
+        menu = wx.Menu()
+        item = menu.Append(-1, "New SDL child window\tCtrl-N")
+        self.Bind(wx.EVT_MENU, self.onNewChild, item)
+        item = menu.Append(-1, "New node window\tCtrl-N")
+        self.Bind(wx.EVT_MENU, self.onNewNode, item)
+        item = menu.Append(-1, "Close parent")
+        self.Bind(wx.EVT_MENU, self.onDoClose, item)
+        mb.Append(menu, "&File")
+        return mb
+    
+    
+
+class NodeEditor(wx.Panel):
+    def __init__(self,parent,ID,tplSize,*args):
+        wx.Panel.__init__(self, parent, ID, size=tplSize)
+        
         self.node_module = args[0]
         self.Nodes = []
-        
+
+        self.count = 0
         # mouse pos controls
         self.start = []
         self.current = []
@@ -31,7 +95,7 @@ class NodeEditor(wx.Frame):
         self.end = []
         self.radius = 7
         self.initEditor()
-        
+
     def initEditor(self):
         # bind mouse ,key
         self.SetBackgroundColour("#0C1821")
@@ -41,13 +105,19 @@ class NodeEditor(wx.Frame):
         self.Bind(wx.EVT_LEFT_UP, self.onLeftUp)
         self.Bind(wx.EVT_RIGHT_DOWN, self.onRightDown)
         self.Bind(wx.EVT_RIGHT_UP, self.onRightUp)
-        
-        #draw_button = wx.Button(self, label="Press Me")
-        #self.Bind(wx.EVT_BUTTON, self.OnButtonPressed, draw_button)
+    
+    def drawTestRects(self,dc):
+        dc.SetBrush(wx.Brush("#000000",style=wx.SOLID))
+        dc.DrawRectangle(50,50,50,50)
+        dc.DrawRectangle(100,100,100,100)
+    
+    def onPaint(self, event):
+        event.Skip()
 
-        self.Centre()
-        self.Show()
-
+        dc=wx.PaintDC(self)
+        dc.BeginDrawing()
+        dc.EndDrawing()
+    
     def onPaint(self, e):
         self.dc = wx.PaintDC(self)
         
@@ -122,8 +192,6 @@ class NodeEditor(wx.Frame):
         
         
         self.displayNodes()
-                    
-        
         
     def onLeftUp(self,event):
         x = event.GetX()
@@ -152,8 +220,6 @@ class NodeEditor(wx.Frame):
         for n in self.Nodes:
                 for p in n.pins:
                     p.selected = False
-
-        
     
     def onRightDown(self,event):
         x = event.GetX()
@@ -172,8 +238,10 @@ class NodeEditor(wx.Frame):
     def createNode(self,title,x,y,width,height):
         n = self.node_module.Node(title,x,y,width,height)
         self.Nodes.append(n)
+    
     def addPin(self,_type_):
         pass
+    
     def createNodeConnector(self):
         pass
     
@@ -230,6 +298,97 @@ class NodeEditor(wx.Frame):
                 self.dc.SetFont(font) 
                 self.dc.DrawText(n.title,n.x+10,n.y-20) 
                 #n.conection()
+
+
+class ChildFrameSDL(wx.aui.AuiMDIChildFrame):
+    def __init__(self, parent, count,_type,*args):
+        wx.aui.AuiMDIChildFrame.__init__(self, parent, -1,
+                                         title="Child: %d" % count)
+        mb = parent.MakeMenuBar()
+        menu = wx.Menu()
+        item = menu.Append(-1, "This is child %d's menu" % count)
+        mb.Append(menu, "&Child")
+        self.SetMenuBar(mb)
+        if _type == "sdl":
+            p = SDLPanel(self, -1, (640,480),args[0])
+        else:
+            p = NodeEditor(self, -1, (640,480),args[0])
+        sizer = wx.BoxSizer()
+        sizer.Add(p, 1, wx.EXPAND)
+        self.SetSizer(sizer)
+        
+        wx.CallAfter(self.Layout)
+
+class SDLThread:
+    def __init__(self,screen):
+        self.m_bKeepGoing = self.m_bRunning = False
+        self.screen = screen
+        self.color = (255,0,0)
+        self.rect = (10,10,100,100)
+        self.thread = None
+        self.init = True
+
+    def Start(self):
+        #I rewrote this to use the higherlevel threading module
+        self.m_bKeepGoing = self.m_bRunning = True
+        self.thread = threading.Thread(group=None, target=self.Run, name=None, 
+                                       args=(), kwargs={})
+        self.thread.start()
+
+    def Stop(self):
+        self.m_bKeepGoing = False
+        #this important line make sure that the draw thread exits before
+        #pygame.quit() is called so there is no errors
+        self.thread.join()
+
+    def IsRunning(self):
+        return self.m_bRunning
+
+    def Run(self):
+        while self.m_bKeepGoing:
+            #I rewrote this to only draw when the position changes
+            e = pygame.event.poll()
+            if e.type == pygame.MOUSEBUTTONDOWN:
+                self.color = (255,0,128)
+                self.rect = (e.pos[0], e.pos[1], 100, 100)
+                print (e.pos)
+                self.screen.fill((0,0,0))
+                self.screen.fill(self.color,self.rect)
+            if self.init:
+                self.screen.fill((0,0,0))
+                self.screen.fill(self.color,self.rect)
+            pygame.display.flip()
+        self.m_bRunning = False;
+        print ("pygame draw loop exited")
+ 
+class SDLPanel(wx.Panel):
+    def __init__(self,parent,ID,tplSize,*args):
+        global pygame
+        global pygame_init_flag
+        wx.Panel.__init__(self, parent, ID, size=tplSize)
+        self.Fit()
+        os.environ['SDL_WINDOWID'] = str(self.GetHandle())
+        os.environ['SDL_VIDEODRIVER'] = 'windib'
+        #here is where things change if pygame has already been initialized 
+        #we need to do so again
+        if pygame_init_flag:
+            #call pygame.init() on subsaquent windows
+            pygame.init()
+        else:
+            #import if this is the first time
+            import pygame
+        pygame_init_flag = True #make sure we know that pygame has been imported
+        pygame.display.init()
+        window = pygame.display.set_mode(tplSize)
+        self.thread = SDLThread(window)
+        self.thread.Start()
+
+    def __del__(self):
+        self.thread.Stop()
+        print( "thread stoped")
+        #very important line, this makes sure that pygame exits before we 
+        #reinitialize it other wise we get errors
+        pygame.quit()
 
     
 

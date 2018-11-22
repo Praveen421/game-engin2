@@ -71,7 +71,13 @@ https://github.com/wxWidgets/Phoenix/blob/master/demo/Overlay.py
 ```sh
 https://wiki.wxpython.org/FrontPage
 ```
+### import rules
+```sh 
+https://chrisyeh96.github.io/2017/08/08/definitive-guide-python-imports.html
 
+https://docs.python.org/2/tutorial/modules.html
+
+```
 ### MVC design
 ```sh
 https://wiki.wxpython.org/ModelViewController

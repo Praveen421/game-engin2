@@ -21,6 +21,7 @@ class ParentFrame(wx.aui.AuiMDIParentFrame):
         mb = self.MakeMenuBar()
         self.SetMenuBar(mb)
         self.CreateStatusBar()
+        self.Maximize(True)
 
     def MakeMenuBar(self):
         mb = wx.MenuBar()
