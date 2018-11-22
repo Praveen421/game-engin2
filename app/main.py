@@ -28,6 +28,7 @@ from debuger import *
 #import tkinter as tk
 #from tkinter import ttk
 import views.view_node_editor as view
+#from views.test2 import *
 import wx
 
 def part(str):
@@ -82,13 +83,11 @@ def main():
             find_module('pointer'),
             find_module('rect'),
             find_module('tile'),path=path)'''
-    #designer.main()
-    #create_new_project()
-
-
+    # designer.main()
+    # create_new_project()
     
     app = wx.App()
-    view.NodeEditor(None,"Node Editor ",find_module('node'))
+    view.NodeEditor(None,"Node Editor",find_module('node'))
     app.MainLoop()
 
 if __name__ == "__main__":
