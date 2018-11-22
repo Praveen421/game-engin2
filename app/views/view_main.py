@@ -33,7 +33,7 @@ class MainWindow(wx.aui.AuiMDIParentFrame):
         # super(NodeEditor, self).__init__(parent, title=title,size=(550, 550))
 
         wx.aui.AuiMDIParentFrame.__init__(self, parent, -1,
-                                          title="AuiMDIParentFrame",
+                                          title=" PyTrack v 1.0 ",
                                           size=(640,480),
                                           style=wx.DEFAULT_FRAME_STYLE)
         self.node_module = args[0]
@@ -147,7 +147,7 @@ class NodeEditor(wx.Panel):
             evtPos = event.GetPosition()
             #print("Drag",self.start)
             
-            #self.dc.Clear()
+            self.dc.Clear()
             dx = evtPos[0] - self.current[0]
             dy = evtPos[1] - self.current[1]
             self.current = evtPos
@@ -299,7 +299,6 @@ class NodeEditor(wx.Panel):
                 self.dc.DrawText(n.title,n.x+10,n.y-20) 
                 #n.conection()
 
-
 class ChildFrameSDL(wx.aui.AuiMDIChildFrame):
     def __init__(self, parent, count,_type,*args):
         wx.aui.AuiMDIChildFrame.__init__(self, parent, -1,
@@ -320,9 +319,9 @@ class ChildFrameSDL(wx.aui.AuiMDIChildFrame):
         wx.CallAfter(self.Layout)
 
 class SDLThread:
-    def __init__(self,screen):
+    def __init__(self,designer):
         self.m_bKeepGoing = self.m_bRunning = False
-        self.screen = screen
+        self.designer = designer
         self.color = (255,0,0)
         self.rect = (10,10,100,100)
         self.thread = None
@@ -347,17 +346,18 @@ class SDLThread:
     def Run(self):
         while self.m_bKeepGoing:
             #I rewrote this to only draw when the position changes
-            e = pygame.event.poll()
-            if e.type == pygame.MOUSEBUTTONDOWN:
-                self.color = (255,0,128)
-                self.rect = (e.pos[0], e.pos[1], 100, 100)
-                print (e.pos)
-                self.screen.fill((0,0,0))
-                self.screen.fill(self.color,self.rect)
-            if self.init:
-                self.screen.fill((0,0,0))
-                self.screen.fill(self.color,self.rect)
-            pygame.display.flip()
+            # e = pygame.event.poll()
+            # if e.type == pygame.MOUSEBUTTONDOWN:
+            #     self.color = (255,0,128)
+            #     self.rect = (e.pos[0], e.pos[1], 100, 100)
+            #     print (e.pos)
+            #     self.screen.fill((0,0,0))
+            #     self.screen.fill(self.color,self.rect)
+            # if self.init:
+            #     self.screen.fill((0,0,0))
+            #     self.screen.fill(self.color,self.rect)
+            # pygame.display.flip()
+            self.designer.main()
         self.m_bRunning = False;
         print ("pygame draw loop exited")
  
@@ -371,16 +371,20 @@ class SDLPanel(wx.Panel):
         os.environ['SDL_VIDEODRIVER'] = 'windib'
         #here is where things change if pygame has already been initialized 
         #we need to do so again
+        n = args[0]
         if pygame_init_flag:
             #call pygame.init() on subsaquent windows
-            pygame.init()
+            #pygame.init()
+            n.initPygame()
         else:
             #import if this is the first time
             import pygame
+        
+        n.initPygame()
         pygame_init_flag = True #make sure we know that pygame has been imported
-        pygame.display.init()
-        window = pygame.display.set_mode(tplSize)
-        self.thread = SDLThread(window)
+        #pygame.display.init()
+        #window = pygame.display.set_mode(tplSize)
+        self.thread = SDLThread(n)
         self.thread.Start()
 
     def __del__(self):
