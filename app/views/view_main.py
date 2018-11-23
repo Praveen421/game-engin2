@@ -52,6 +52,10 @@ class MainWindow(wx.aui.AuiMDIParentFrame):
         self.Maximize(True)
         self.Centre()
         self.Show()
+        s =sizerMain()
+
+    def sizerMain(self):
+        return  wx.sizer(wx.HORIZONTAL)
     
     def onNewChild(self, evt):
         self.count += 1
@@ -312,8 +316,22 @@ class ChildFrameSDL(wx.aui.AuiMDIChildFrame):
             p = SDLPanel(self, -1, (640,480),args[0])
         else:
             p = NodeEditor(self, -1, (640,480),args[0])
-        sizer = wx.BoxSizer()
-        sizer.Add(p, 1, wx.EXPAND)
+        # bSizer1 = wx.BoxSizer( wx.HORIZONTAL  )
+
+        #sizer = wx.BoxSizer(wx.HORIZONTAL)
+        
+        self.m_scrolledWindow1 = wx.ScrolledWindow( self, wx.ID_ANY, wx.DefaultPosition, wx.Size( 10,-1 ), wx.HSCROLL|wx.VSCROLL )
+		
+        self.m_scrolledWindow1.SetScrollRate( 5, 5 )
+		
+        self.m_scrolledWindow1.SetMaxSize( wx.Size( 100,-1 ) )
+
+		
+        s = parent.sizerMain()
+        
+        s.Add( self.m_scrolledWindow1, 1, wx.EXPAND |wx.ALL,5 )
+        
+        s.Add(p, 1, wx.EXPAND)
         self.SetSizer(sizer)
         
         wx.CallAfter(self.Layout)
@@ -358,7 +376,7 @@ class SDLThread:
             #     self.screen.fill(self.color,self.rect)
             # pygame.display.flip()
             self.designer.main()
-        self.m_bRunning = False;
+        self.m_bRunning = False
         print ("pygame draw loop exited")
  
 class SDLPanel(wx.Panel):
