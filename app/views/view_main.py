@@ -36,13 +36,8 @@ class MainWindow(wx.aui.AuiMDIParentFrame):
         # super(NodeEditor, self).__init__(parent, title=title,size=(550, 550))
 
         wx.aui.AuiMDIParentFrame.__init__(self, parent, -1,
-<<<<<<< HEAD
-                                          title=" PyTrack v 1.0 ",
-                                          size=(640,480),
-=======
                                           title=" PyTrack v 1.0.1 ",
                                           size=(640, 480),
->>>>>>> menu
                                           style=wx.DEFAULT_FRAME_STYLE)
         self.node_module = args[0]
         self.designer = args[1]
@@ -130,20 +125,6 @@ class MainWindow(wx.aui.AuiMDIParentFrame):
         child.Show()
 
     def MakeMenuBar(self):
-<<<<<<< HEAD
-        mb = wx.MenuBar()
-        menu = wx.Menu()
-        item = menu.Append(-1, "New SDL child window\tCtrl-N")
-        self.Bind(wx.EVT_MENU, self.onNewChild, item)
-        item = menu.Append(-1, "New node window\tCtrl-N")
-        self.Bind(wx.EVT_MENU, self.onNewNode, item)
-        item = menu.Append(-1, "Close parent")
-        self.Bind(wx.EVT_MENU, self.onDoClose, item)
-        mb.Append(menu, "&File")
-        return mb
-    
-    
-=======
         m_menubar1 = wx.MenuBar(0)
         m_menubar1.SetForegroundColour(
             wx.SystemSettings.GetColour(wx.SYS_COLOUR_BACKGROUND))
@@ -199,7 +180,6 @@ class PageThree(wx.Panel):
     def __init__(self, parent):
         wx.Panel.__init__(self, parent)
         t = wx.StaticText(self, -1, "This is a PageThree object", (60,60))
->>>>>>> menu
 
 class NodeEditor(wx.Panel):
     def __init__(self, parent, ID, tplSize, *args):
