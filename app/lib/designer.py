@@ -67,27 +67,12 @@ class Designer():
         # import the paths
         self.ABSPATH = kwargs['path']
 
-        # initilize the pygame
-        pygame.init()
         # screen height and width
         self.width ,self.height = 800,600
         # center of the screen | environment cooords
         self.cx,self.cy,self.cz = self.width/2,self.height/2, -5
-        # loading the icon  
-        #pygame.display.set_icon(pygame.image.load('Icon.png'))
-        # init the name of the window
-        pygame.display.set_caption("PyTrack | v1.0.1")
-        # initilise the clock
-        self.clock = pygame.time.Clock()
-        # initilize the screen 
-        # ,pygame.DOUBLEBUF,pygame.SRCALPHA
-        self.screen = pygame.display.set_mode((self.width,self.height),pygame.SRCALPHA, 32)
-        #self.screen.set_alpha(254)
-        #print(self.screen.get_alpha())
-        self.screen.fill(pygame.Color(255,255,255))
-        pygame.display.init()
-        pygame.display.update()
-        # graphics mode
+        
+        # color object
         self.color = colors()
 
         # initilise the main camera
@@ -96,7 +81,7 @@ class Designer():
         self.pixelFactor = 200/self.cam.pos[2]
         self.scalex,self.scaley = -self.width/self.pixelFactor,-self.height/self.pixelFactor
 
-        self.pos = pygame.mouse.get_pos()
+        self.pos = (0,0) # pygame.mouse.get_pos()
         self.pointer = self.Pointer_module.Pointer(self.pos[0],self.pos[1],100,100)
         #pointer.textureEnabled = False
         
@@ -121,6 +106,34 @@ class Designer():
         self.sentToBack = False
 
         print (len(self.assets))
+    
+    def initPygame(self):
+
+        # initilize the pygame
+        pygame.init()
+        # loading the icon  
+        #pygame.display.set_icon(pygame.image.load('Icon.png'))
+        # init the name of the window
+        pygame.display.set_caption("PyTrack | v1.0.1")
+        # initilise the clock
+        self.clock = pygame.time.Clock()
+        # initilize the screen 
+        # ,pygame.DOUBLEBUF,pygame.SRCALPHA
+        #give me the biggest 16-bit display available
+        modes = pygame.display.list_modes(16)
+        if not modes:
+            print ('16-bit not supported')
+            self.screen = pygame.display.set_mode((self.width,self.height),pygame.SRCALPHA, 32)
+        else:
+            print ('Found Resolution:', modes[0])
+            self.screen = pygame.display.set_mode(modes[0], FULLSCREEN, 16)
+            #self.screen = pygame.display.set_mode((self.width,self.height),pygame.SRCALPHA, 32)
+        #self.screen.set_alpha(254)
+        #print(self.screen.get_alpha())
+        self.screen.fill(pygame.Color(255,255,255))
+        pygame.display.init()
+        pygame.display.update()
+        # graphics mode
 
     def screenToWorld(self,cords):
         x,y,z = cords[0],cords[1],0
@@ -509,7 +522,7 @@ class Designer():
         ''')
 
     def main(self):
-        while True:
+        #while True:
         
             self.screen.fill(self.color.BLACK)
             # setting the smallest time variation

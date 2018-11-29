@@ -15,250 +15,437 @@ Copyright {2017} {siddhartha singh | sidd5sci@gmail.com}
 '''
 
 
-import os,time
-import tkinter as tk
-from tkinter import ttk
+import wx
+import wx.xrc
+import wx.aui
+import wx.dataview
+import wx.propgrid as pg
+import os
+import threading
+global pygame # when we import it, let's keep its proper name!
+global pygame_init_flag
+pygame_init_flag = False
+from pygame.locals import *
 
-class UI():
-    def __init__(self,*args):
-        # libs
+import sys; sys.path.insert(0, "..")
+
+
+
+class MainWindow(wx.aui.AuiMDIParentFrame):
+    def __init__(self, parent, title,*args):
+        # super(NodeEditor, self).__init__(parent, title=title,size=(550, 550))
+
+        wx.aui.AuiMDIParentFrame.__init__(self, parent, -1,
+                                          title=" PyTrack v 1.0 ",
+                                          size=(640,480),
+                                          style=wx.DEFAULT_FRAME_STYLE)
         self.node_module = args[0]
+        self.designer = args[1]
+        self.count = 0
         
+        self.initEditor()
+    
+    def initEditor(self):
+                
+        #draw_button = wx.Button(self, label="Press Me")
+        #self.Bind(wx.EVT_BUTTON, self.OnButtonPressed, draw_button)
+        mb = self.MakeMenuBar()
+        self.SetMenuBar(mb)
+        self.CreateStatusBar()
+        self.Maximize(True)
+        self.Centre()
+        self.Show()
+
+        self.bSizer1 = wx.BoxSizer( wx.HORIZONTAL )
+		
+        self.m_auinotebook1 = wx.aui.AuiNotebook( self, wx.ID_ANY, wx.DefaultPosition, wx.Size( 550,-1 ), wx.aui.AUI_NB_DEFAULT_STYLE )
+		
+        self.bSizer1.Add( self.m_auinotebook1, 1, wx.EXPAND |wx.ALL, 5 )
+		
+        bSizer2 = wx.BoxSizer( wx.VERTICAL )
+    
+        self.m_dataViewCtrl1 = wx.dataview.DataViewCtrl( self, wx.ID_ANY, wx.DefaultPosition, wx.Size( 130,200 ), 0 )
+        bSizer2.Add( self.m_dataViewCtrl1, 0, wx.ALL, 5 )
+    
+        self.m_propertyGridManager1 = pg.PropertyGridManager(self, wx.ID_ANY, wx.DefaultPosition, wx.Size( 130,200 ), wx.propgrid.PGMAN_DEFAULT_STYLE)
+        self.m_propertyGridManager1.SetExtraStyle( wx.propgrid.PG_EX_MODE_BUTTONS ) 
+    
+        self.m_propertyGridPage1 = self.m_propertyGridManager1.AddPage( u"Page", wx.NullBitmap );
+        self.m_propertyGridItem1 = self.m_propertyGridPage1.Append( pg.StringProperty( u"Name", u"Name" ) ) 
+        self.m_propertyGridItem6 = self.m_propertyGridPage1.Append( pg.StringProperty( u"Name1", u"Name1" ) ) 
+        self.m_propertyGridItem7 = self.m_propertyGridPage1.Append( pg.StringProperty( u"Name2", u"Name2" ) ) 
+        self.m_propertyGridItem8 = self.m_propertyGridPage1.Append( pg.StringProperty( u"Name3", u"Name3" ) ) 
+        self.m_propertyGridItem9 = self.m_propertyGridPage1.Append( pg.StringProperty( u"Name4", u"Name4" ) ) 
+        self.m_propertyGridItem2 = self.m_propertyGridPage1.Append( pg.StringProperty( u"Name5", u"Name5" ) ) 
+        self.m_propertyGridItem3 = self.m_propertyGridPage1.Append( pg.StringProperty( u"Name6", u"Name6" ) ) 
+        self.m_propertyGridItem4 = self.m_propertyGridPage1.Append( pg.StringProperty( u"Name7", u"Name7" ) ) 
+        self.m_propertyGridItem5 = self.m_propertyGridPage1.Append( pg.StringProperty( u"Name8", u"Name8" ) ) 
+        bSizer2.Add( self.m_propertyGridManager1, 0, wx.ALL, 5 )
+    
+    
+        self.bSizer1.Add( bSizer2, 1, wx.EXPAND, 5 )
+    
+    
+        self.SetSizer( self.bSizer1 )
+        self.Layout()
+    
+        self.Centre( wx.BOTH )
+	
+	# def __del__( self ):
+	# 	pass
+	
+		
+
+    def sizerMain(self):
+        return  self.bSizer1
+    
+    def onNewChild(self, evt):
+        self.count += 1
+        child = ChildFrameSDL(self, self.count,"sdl",self.designer)
+        child.Show()
+
+    def onDoClose(self, evt):
+        self.Close()
+    
+    def onNewNode(self,evt):
+        self.count += 1
+        child = ChildFrameSDL(self, self.count,"node",self.node_module)
+        child.Show()
+
+    def MakeMenuBar(self):
+        mb = wx.MenuBar()
+        menu = wx.Menu()
+        item = menu.Append(-1, "New SDL child window\tCtrl-N")
+        self.Bind(wx.EVT_MENU, self.onNewChild, item)
+        item = menu.Append(-1, "New node window\tCtrl-N")
+        self.Bind(wx.EVT_MENU, self.onNewNode, item)
+        item = menu.Append(-1, "Close parent")
+        self.Bind(wx.EVT_MENU, self.onDoClose, item)
+        mb.Append(menu, "&File")
+        return mb
+    
+    
+
+class NodeEditor(wx.Panel):
+    def __init__(self,parent,ID,tplSize,*args):
+        wx.Panel.__init__(self, parent, ID, size=tplSize)
         
+        self.node_module = args[0]
         self.Nodes = []
 
-        # main window
-        self.win = tk.Tk()
-        self.win.title("PyTrack")
-        self.center_window(900,650)
+        self.count = 0
+        # mouse pos controls
+        self.start = []
+        self.current = []
+        self.lastCurrent = []
+        self.end = []
+        self.radius = 7
+        self.initEditor()
 
-        # left Frame
-        self.win_left = tk.Frame(self.win,width=200,height=600)
-        self.win_left.columnconfigure(0, weight=1)
-        self.win_left.rowconfigure(0, weight=1)
-        s = ttk.Separator(self.win_left, orient=tk.HORIZONTAL)
-        lf = ttk.Labelframe(self.win_left, text='Label')
-        self.win_left.pack(side = tk.LEFT)
-        # center embed window
-        self.tab_control = ttk.Notebook(self.win, width = 650 ,height = 630)
-        
-        self.tab1 = ttk.Frame(self.tab_control)
-        self.tab_control.add(self.tab1,text="Designer")
-        self.tab_control.pack(expand=1,fill="both")
-        os.environ['SDL_WINDOWID'] = str(self.win_left.winfo_id())
-        os.environ['SDL_VIDEODRIVER'] = 'windib'
+    def initEditor(self):
+        # bind mouse ,key
+        self.SetBackgroundColour("#0C1821")
+        self.Bind(wx.EVT_PAINT, self.onPaint)
+        self.Bind(wx.EVT_MOTION, self.OnMouseMove)
+        self.Bind(wx.EVT_LEFT_DOWN, self.onLeftDown)
+        self.Bind(wx.EVT_LEFT_UP, self.onLeftUp)
+        self.Bind(wx.EVT_RIGHT_DOWN, self.onRightDown)
+        self.Bind(wx.EVT_RIGHT_UP, self.onRightUp)
+    
+    def drawTestRects(self,dc):
+        dc.SetBrush(wx.Brush("#000000",style=wx.SOLID))
+        dc.DrawRectangle(50,50,50,50)
+        dc.DrawRectangle(100,100,100,100)
+    
+    def onPaint(self, event):
+        event.Skip()
 
-        self.tab2 = ttk.Frame(self.tab_control)
-        self.tab_control.add(self.tab2,text="Node Editor")
-        self.tab_control.pack(expand=1,fill="both")
+        dc=wx.PaintDC(self)
+        dc.BeginDrawing()
+        dc.EndDrawing()
+    
+    def onPaint(self, e):
+        self.dc = wx.PaintDC(self)
         
-    def InitEvents(self):
-        self.canvas.bind('<ButtonPress-1>', self.GraphLeftMousePressed)
-        self.canvas.bind('<ButtonRelease-1>', self.GraphLeftMouseReleased)
-        self.canvas.bind('<ButtonPress-2>', self.GraphScrollPressed)
-        self.canvas.bind('<ButtonRelease-2>', self.GraphScrollReleased)
-        self.canvas.bind('<ButtonPress-3>', self.GraphRightMousePressed)
-        self.canvas.bind('<ButtonRelease-3>', self.GraphRightMouseReleased)
-        self.win.bind('<Delete>', self.DeleteBtnPressed)
+        #dc.Clear() 
+        #dc.DrawBitmap(wx.Bitmap("python.jpg"),10,10,True) 
+        self.createNode("Palyer",200,200,100,100)
+        self.createNode("Key Down",400,300,100,100)
+        self.displayNodes()
+        self.gc = wx.GraphicsContext.Create(self.dc)
+        self.gc.PushState()
+        self.drawBezier(300,200,400,300)
+        self.gc.PopState()
+        #self.dc.EndDrawing()
+    
+    def drawBezier(self,toX,toY,fromX,fromY):
+        self.gc.SetPen(wx.Pen("#0E7C7B",2))
+        path = self.gc.CreatePath()
+        path.MoveToPoint(wx.Point2D(toX,toY)) # where to move
+        # Adds a cubic Bezier curve from the current point, using two control points and an end point.
+        path.AddCurveToPoint(wx.Point2D(toX+50,toY+10),
+                             wx.Point2D(fromX-70,fromY-10),
+                             wx.Point2D(fromX,fromY))
+        self.gc.DrawPath(path)
+    
+    def OnMouseMove(self, event):
+        if event.Dragging() and event.LeftIsDown():
+            evtPos = event.GetPosition()
+            #print("Drag",self.start)
+            
+            self.dc.Clear()
+            dx = evtPos[0] - self.current[0]
+            dy = evtPos[1] - self.current[1]
+            self.current = evtPos
+            for n in self.Nodes:
+                if n.selected == True:
+                    # send the delta x,y to nodes
+                    n.translate(dx,dy)
+            for n in self.Nodes:
+                for p in n.pins:
+                    if p.selected == True:
+                        self.drawBezier(p.x+n.x,p.y+n.y,evtPos[0],evtPos[1])
+                        
+            
+            
+            self.displayNodes()
+            
+            try:
+                rect = wx.Rect(topLeft=(0,0), bottomRight=evtPos)
+            except TypeError as exc:  # topLeft = NoneType. Attempting to double click image or something
+                return
+            except Exception as exc:
+                raise exc
+    
+    def onLeftDown(self,event):
+        x = event.GetX()
+        y = event.GetY()
+        self.start = [x,y]
+        self.current = self.start
+        print("left down",self.start)
+        noneSelected = 1
+        for n in self.Nodes:
+                if n.isInside(self.start[0],self.start[1]):
+                    n.setSelectedTrue()
+                    noneSelected = 0
+                    wx.SetCursor(wx.StockCursor(wx.CURSOR_HAND))
+                
+                
+        if noneSelected == 1:
+            for n in self.Nodes:
+                    n.setSelectedFalse()
+                    wx.SetCursor(wx.StockCursor(wx.CURSOR_ARROW))
+        
+        
+        self.displayNodes()
+        
+    def onLeftUp(self,event):
+        x = event.GetX()
+        y = event.GetY()
+        self.end = [x,y]
+        self.start = None
+        print("left Up",self.start)
+        
+        flag,spid,sptp = 0,-1,''
+        for n in self.Nodes:
+            for p in n.pins:
+                    if p.selected == True:
+                        flag = 1
+                        spid = p.id
+                        sptp = p._type_
+                        break
+            if flag == 1:
+                # search where the (x,y) lies
+                for node in self.Nodes:
+                    if node.isInsideOnly(x,y):
+                        p = node.isInsidePinOnly(x,y)
+                        if p:
+                            n.createConnection(x,y,node.id,p.id,spid,sptp)
+
+
+        for n in self.Nodes:
+                for p in n.pins:
+                    p.selected = False
+    
+    def onRightDown(self,event):
+        x = event.GetX()
+        y = event.GetY()
+        print("Right down",x,y)
+        self.createNode("New Node",x,y,100,100)
+        #brush = wx.Brush(wx.Colour(192,192,192,0x80))
+        self.displayNodes()
+    
+    def createMenu(self):
+        self.dc.DrawRectangleList()
+    
+    def onRightUp(self,event):
+        print("Right up")
+
+    def createNode(self,title,x,y,width,height):
+        n = self.node_module.Node(title,x,y,width,height)
+        self.Nodes.append(n)
+    
+    def addPin(self,_type_):
+        pass
+    
+    def createNodeConnector(self):
+        pass
+    
+    def displayConnector(self):
+        pass
     
     def displayNodes(self):
+        self.dc = wx.ClientDC(self)
         for n in self.Nodes:
-            self.canvas.create_rectangle([n.x,n.y,n.x+n.width,n.y+n.height], fill = '#1b2a41')
-            self.canvas.create_rectangle([n.x,n.y-25,n.x+n.width,n.y], fill = '#324a5f')
-            self.canvas.create_text((n.x+10,n.y-20),anchor=tk.NW,fill="#0e7c7b",text=n.title)
-    
-    def create_node(self,name,x,y,width,height):
-        n = self.node_module.Node(name,x,y,width,height)
-        self.Nodes.append(n)
-
-    def create_node_editor(self):
-        # canvas
-        self.canvas = tk.Canvas(self.tab2,width= 800,height=600,bg='#0c1821')
-        self.canvas.pack(fill = tk.BOTH, expand = 1)
-        self.canvas.update()
-
-    def create_popup_menu(self,x,y,height,width):
-        
-        self.popupMenu = tk.Frame(self.canvas, bg='#1b2a41')
-        self.popupMenu.pack()
-        self.popupMenu.configure(width=width,height=height)
-        self.popupMenu.place_configure(x=x,y=y)
-
-        # listbox 
-        self.listBox = tk.Listbox(self.popupMenu)
-        self.listBox.pack(side=tk.LEFT)
-        self.Scrollbar = tk.Scrollbar(self.popupMenu)
-        self.Scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
-
-        self.listBox.insert(1,"Player")
-        self.listBox.insert(2,"Object")
-        self.listBox.insert(3,"Background")
-        self.listBox.insert(4,"Camera")
-        self.listBox.insert(5,"Sounds")
-        self.listBox.insert(6,"Music")
-
-        # remove scroll
-        self.listBox.config(yscrollcommand=self.Scrollbar.set)
-        self.Scrollbar.config(command=self.listBox.yview)
-
-        self.listBox.bind('<<ListboxSelect>>', lambda event: self.NodesMenuSelected(self.listBox.selection_get()))
-    
-    def delete_popup_menu(self):
-        self.canvas.delete(tk.ALL)
-        self.popupMenu.destroy()
-    
-    def NodesMenuSelected(self, selection):
-        print("Menu-selected-: "+selection)
-        self.delete_popup_menu()
-        x,y = self.GetMousePos()
-        self.create_node(selection,x,y,80,80)
-        self.win.update()
-
-    def center_window(self,width=300, height=200):
-        # get screen width and height
-        screen_width = self.win.winfo_screenwidth()
-        screen_height = self.win.winfo_screenheight()
-
-        # calculate position x and y coordinates
-        x = (screen_width/2) - (width/2)
-        y = (screen_height/2) - (height/2)
-        self.win.geometry('%dx%d+%d+%d' % (width, height, x, y))
-    
-    def GetMousePos(self):
-        x = self.canvas.winfo_pointerx() - self.canvas.winfo_rootx()
-        y = self.canvas.winfo_pointery() - self.canvas.winfo_rooty()
-        return x,y
-
-    def DeleteBtnPressed(self, event):
-        self.Controller.DeleteBtnPressed()
-
-    def NodeLeftMousePressed(self, node):
-        self.Controller.NodeLeftMousePressed(node)
-
-    def NodeLeftMouseReleased(self, node):
-        self.Controller.NodeLeftMouseReleased(node)
-
-    def NodeInputLeftMousePressed(self, node):
-        self.Controller.NodeInputLeftMousePressed(node)
-
-    def NodeInputLeftMouseReleased(self, node):
-        self.Controller.NodeInputLeftMouseReleased(node)
-
-    def NodeOutputLeftMousePressed(self, node):
-        self.Controller.NodeOutputLeftMousePressed(node)
-
-    def NodeOutputLeftMouseReleased(self, node):
-        self.Controller.NodeOutputLeftMouseReleased(node)
-
-    def NodePinLeftMousePressed(self, node, pin):
-        self.Controller.NodePinLeftMousePressed(node, pin)
-
-    def NodePinLeftMouseReleased(self, node, pin):
-        self.Controller.NodePinLeftMouseReleased(node, pin)
-
-    def GraphLeftMousePressed(self,event):
-        print('Graph-LeftMousePressed')
-        self.delete_popup_menu()
-        x,y = self.GetMousePos()
-        # selected node is 0
-        self.Nodes[0].set_x(x)
-        self.Nodes[0].set_x(y)
-        
-
-    def GraphLeftMouseReleased(self,event):
-        print('Graph-LeftMouseReleased')
-
-    def GraphScrollPressed(self,event):
-        self.Controller.GraphScrollPressed()
-
-    def GraphScrollReleased(self,event):
-        self.Controller.GraphScrollReleased()
-
-    def GraphRightMousePressed(self,event):
-        print('Graph-RightMousePressed')
-        x,y = self.GetMousePos()
-        self.create_popup_menu(x,y,100,200)
-
-    def GraphRightMouseReleased(self,event):
-        print('Graph-RightMouseReleased')
-
-    def NodeSettingsBtnClicked(self,event):
-        print('NodeSettingsBtnClicked')
-
-    def GlobalSettingsBtnClicked(self,event):
-        print('GlobalSettingsBtnClicked')
-    
-    def top_menu(self):
+            if n.selected :
+                #brush = wx.Brush(wx.Colour(192,192,192,0x80))
+                self.dc.SetBrush(wx.Brush('#324A5F'))
+                self.dc.DrawRectangle(n.x,n.y,n.width,n.height)
+                self.dc.DrawRectangle(n.x,n.y-25,n.width,25)
+                for p in n.pins:
+                    if p._type_ == 'input':
+                        # input pins
+                        self.dc.SetBrush(wx.Brush('#324A5F'))
+                        self.dc.DrawCircle(n.x,n.y+p.y,n.radius)
+                        self.dc.SetBrush(wx.Brush('#CCC9DC'))
+                        self.dc.DrawCircle(n.x,n.y+p.y,n.radius-2)
+                    else:
+                        # output pins
+                        self.dc.SetBrush(wx.Brush('#324A5F'))
+                        self.dc.DrawCircle(n.x+n.width,n.y+p.y,n.radius)
+                        self.dc.SetBrush(wx.Brush('#CCC9DC'))
+                        self.dc.DrawCircle(n.x+n.width,n.y+p.y,n.radius-2)
                 
-        # creating the menu for GUI
-        menu = tk.Menu(self.win,bg='#212121')
-        self.win.config(menu=menu)
-        # file menu option
-        filemenu = tk.Menu(menu)
-        menu.add_cascade(label="File",menu=filemenu)
-        filemenu.add_command(label = "New" , command=self.about)
-        filemenu.add_command(label = "Open" , command=self.about)
-        filemenu.add_command(label = "Create" , command=self.about)
-        filemenu.add_separator()
-        filemenu.add_command(label = "Import" , command=self.about)
-        filemenu.add_command(label = "Export" , command=self.about)
-        filemenu.add_separator()
-        filemenu.add_command(label = "Exit" , command=self.win.quit)
-        # create menu
-        createmenu = tk.Menu(menu)
-        menu.add_cascade(label="Create", menu=createmenu)
-        createmenu.add_command(label="Cube", command=self.about)
-        createmenu.add_command(label="Cone", command=self.about)
-        createmenu.add_command(label="Cylinder", command=self.about)
-        createmenu.add_command(label="Sphere", command=self.about)
-        createmenu.add_command(label="Plane", command=self.about)
-        createmenu.add_command(label="Circle", command=self.about)
-        createmenu.add_command(label="Human", command=self.about)
-        createmenu.add_separator()
-        createmenu.add_command(label="Light", command=self.about)
-        createmenu.add_command(label="Spot light", command=self.about)
-        createmenu.add_command(label="Area light", command=self.about)
-        createmenu.add_separator()
-        createmenu.add_command(label="Camera", command=self.about)
-        # physics menu
-        physicsmenu = tk.Menu(menu)
-        menu.add_cascade(label="Physics" ,menu = physicsmenu)
-        physicsmenu.add_command(label="Force", command=self.about)
-        physicsmenu.add_command(label="Torque", command=self.about)
-        # Genatic algorithms
-        GAmenu = tk.Menu(menu)
-        menu.add_cascade(label="GA" ,menu = GAmenu)
-        GAmenu.add_command(label="Init Sequence", command=self.about)
-        GAmenu.add_command(label="Live", command=self.about)
-        # help menu option
-        helpmenu = tk.Menu(menu)
-        menu.add_cascade(label="Help" ,menu = helpmenu)
-        helpmenu.add_command(label="About", command=self.about)
-        helpmenu.add_command(label="Version", command=self.about)
-        helpmenu.add_command(label="Update", command=self.about)
-    
-    def DeleteNodesMenu(self):
-        if self.NodesMenu:
-            self.NodesMenu.Delete()
-            del self.NodesMenu
-            self.NodesMenu = None
-    
-    def run(self):
-        self.canvas.after(1,self.customLoop)
-        #self.win.mainloop()
-   
-    def about(self):
-        print ('about the game engine')
+
+                font = wx.Font(14, wx.ROMAN, wx.ITALIC, wx.NORMAL) 
+                self.dc.SetFont(font) 
+                self.dc.DrawText(n.title,n.x+10,n.y-20) 
+            else:
+                self.dc.SetBrush(wx.Brush(n.COLOR))
+                self.dc.DrawRectangle(n.x,n.y,n.width,n.height)
+                self.dc.DrawRectangle(n.x,n.y-25,n.width,25)
+                
+                for p in n.pins:
+                    if p._type_ == 'input':
+                        # input pins
+                        self.dc.SetBrush(wx.Brush('#324A5F'))
+                        self.dc.DrawCircle(n.x,n.y+p.y,n.radius)
+                        self.dc.SetBrush(wx.Brush('#CCC9DC'))
+                        self.dc.DrawCircle(n.x,n.y+p.y,n.radius-2)
+                    else:
+                        # output pins
+                        self.dc.SetBrush(wx.Brush('#324A5F'))
+                        self.dc.DrawCircle(n.x+n.width,n.y+p.y,n.radius)
+                        self.dc.SetBrush(wx.Brush('#CCC9DC'))
+                        self.dc.DrawCircle(n.x+n.width,n.y+p.y,n.radius-2)
+                
+
+                font = wx.Font(14, wx.ROMAN, wx.ITALIC, wx.NORMAL) 
+                self.dc.SetFont(font) 
+                self.dc.DrawText(n.title,n.x+10,n.y-20) 
+                #n.conection()
+
+class ChildFrameSDL(wx.aui.AuiMDIChildFrame):
+    def __init__(self, parent, count,_type,*args):
+        wx.aui.AuiMDIChildFrame.__init__(self, parent, -1,
+                                         title="Child: %d" % count)
+        mb = parent.MakeMenuBar()
+        menu = wx.Menu()
+        item = menu.Append(-1, "This is child %d's menu" % count)
+        mb.Append(menu, "&Child")
+        self.SetMenuBar(mb)
+        if _type == "sdl":
+            p = SDLPanel(self, -1, (640,480),args[0])
+        else:
+            p = NodeEditor(self, -1, (640,480),args[0])
         
-    def customLoop(self):
 
-        self.create_node("New node",100,100,80,80)
-        self.create_node("New 1",320,200,80,80)
-        while True:
-            self.displayNodes()
-            self.InitEvents()
+        s = parent.sizerMain()
+        
+        s.Add(p, 1, wx.EXPAND |wx.ALL, 5)
+        self.SetSizer(s)
+        
+        # wx.CallAfter(self.Layout)
 
-            
-            self.canvas.update()
+class SDLThread:
+    def __init__(self,designer):
+        self.m_bKeepGoing = self.m_bRunning = False
+        self.designer = designer
+        self.color = (255,0,0)
+        self.rect = (10,10,100,100)
+        self.thread = None
+        self.init = True
 
+    def Start(self):
+        #I rewrote this to use the higherlevel threading module
+        self.m_bKeepGoing = self.m_bRunning = True
+        self.thread = threading.Thread(group=None, target=self.Run, name=None, 
+                                       args=(), kwargs={})
+        self.thread.start()
 
+    def Stop(self):
+        self.m_bKeepGoing = False
+        #this important line make sure that the draw thread exits before
+        #pygame.quit() is called so there is no errors
+        self.thread.join()
+
+    def IsRunning(self):
+        return self.m_bRunning
+
+    def Run(self):
+        while self.m_bKeepGoing:
+            #I rewrote this to only draw when the position changes
+            # e = pygame.event.poll()
+            # if e.type == pygame.MOUSEBUTTONDOWN:
+            #     self.color = (255,0,128)
+            #     self.rect = (e.pos[0], e.pos[1], 100, 100)
+            #     print (e.pos)
+            #     self.screen.fill((0,0,0))
+            #     self.screen.fill(self.color,self.rect)
+            # if self.init:
+            #     self.screen.fill((0,0,0))
+            #     self.screen.fill(self.color,self.rect)
+            # pygame.display.flip()
+            self.designer.main()
+        self.m_bRunning = False
+        print ("pygame draw loop exited")
+ 
+class SDLPanel(wx.Panel):
+    def __init__(self,parent,ID,tplSize,*args):
+        global pygame
+        global pygame_init_flag
+        wx.Panel.__init__(self, parent, ID, size=tplSize)
+        self.Fit()
+        os.environ['SDL_WINDOWID'] = str(self.GetHandle())
+        os.environ['SDL_VIDEODRIVER'] = 'windib'
+        #here is where things change if pygame has already been initialized 
+        #we need to do so again
+        n = args[0]
+        if pygame_init_flag:
+            #call pygame.init() on subsaquent windows
+            #pygame.init()
+            n.initPygame()
+        else:
+            #import if this is the first time
+            import pygame
+        
+        n.initPygame()
+        pygame_init_flag = True #make sure we know that pygame has been imported
+        #pygame.display.init()
+        #window = pygame.display.set_mode(tplSize)
+        self.thread = SDLThread(n)
+        self.thread.Start()
+
+    def __del__(self):
+        self.thread.Stop()
+        print( "thread stoped")
+        #very important line, this makes sure that pygame exits before we 
+        #reinitialize it other wise we get errors
+        pygame.quit()
+
+    
+
+if __name__ == '__main__':
+    app = wx.App()
+    NodeEditor(None, 'Node Editor')
+    app.MainLoop()
