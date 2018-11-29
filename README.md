@@ -70,6 +70,8 @@ https://github.com/wxWidgets/Phoenix/blob/master/demo/Overlay.py
 ### wxPython Refrence 
 ```sh
 https://wiki.wxpython.org/FrontPage
+
+https://www.youtube.com/watch?v=XVE673wsCEQ&list=PL1FgJUcJJ03vIgXI9BvOBdoc0S3PuzcRb
 ```
 ### import rules
 ```sh 
