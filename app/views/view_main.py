@@ -36,7 +36,7 @@ class MainWindow(wx.aui.AuiMDIParentFrame):
         # super(NodeEditor, self).__init__(parent, title=title,size=(550, 550))
 
         wx.aui.AuiMDIParentFrame.__init__(self, parent, -1,
-                                          title=" PyTrack v 1.0.1 ",
+                                          title=" PyTrack v 1.0 ",
                                           size=(640,480),
                                           style=wx.DEFAULT_FRAME_STYLE)
         self.node_module = args[0]
@@ -113,49 +113,16 @@ class MainWindow(wx.aui.AuiMDIParentFrame):
         child.Show()
 
     def MakeMenuBar(self):
-        
-        
-        
-	# m_menubar1 = wx.MenuBar( 0 )
-	# m_menubar1.SetForegroundColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_BACKGROUND ) )
-	# m_menubar1.SetBackgroundColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_INACTIVECAPTIONTEXT ) )
-	
-	# m_File = wx.Menu()
-	# item = m_File.Append( -1, u"New Project\tCtrl-N" )
-	# item = m_File.Append( -1, u"Open Project\tCtrl-O" )
-	# item = m_File.Append( -1, u"Close Project\tCtrl-X" )
-	# item = m_File.Append( -1, u"Close All" )
-	# self.Bind(wx.EVT_MENU, self.onDoClose, item)
-	
-	# m_menubar1.Append( m_File, u"File" ) 
-	
-	# m_Edit = wx.Menu()
-	# m_menubar1.Append( m_Edit, u"Edit" ) 
-	
-	# m_View = wx.Menu()
-	# item = m_View.Append( -1, u"Designer\tCtrl-D" )
-	# self.Bind(wx.EVT_MENU, self.onNewNode, item)
-	# item = m_View.Append( -1, u"Node Editor\tCtrl-E")
-	# self.Bind(wx.EVT_MENU, self.onNewChild, item)
-	
-	# m_menubar1.Append( m_View, u"View" ) 
-	
-	mb = wx.MenuBar()
-	menu = wx.Menu()
-	item = menu.Append(-1, "New SDL child window\tCtrl-N")
-	self.Bind(wx.EVT_MENU, self.onNewChild, item)
-	item = menu.Append(-1, "New node window\tCtrl-N")
-	self.Bind(wx.EVT_MENU, self.onNewNode, item)
-	item = menu.Append(-1, "Close parent")
-	self.Bind(wx.EVT_MENU, self.onDoClose, item)
-	mb.Append(menu, "&View")
-
-
-	#self.SetMenuBar( self.m_menubar1 )
-	return mb
-	
-		
-        return m_menubar1
+        mb = wx.MenuBar()
+        menu = wx.Menu()
+        item = menu.Append(-1, "New SDL child window\tCtrl-N")
+        self.Bind(wx.EVT_MENU, self.onNewChild, item)
+        item = menu.Append(-1, "New node window\tCtrl-N")
+        self.Bind(wx.EVT_MENU, self.onNewNode, item)
+        item = menu.Append(-1, "Close parent")
+        self.Bind(wx.EVT_MENU, self.onDoClose, item)
+        mb.Append(menu, "&File")
+        return mb
     
     
 
