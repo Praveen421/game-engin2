@@ -9,18 +9,19 @@ from debuger import *
 import wx
 
 try:
-	import views.view_main as view
+    import views.view_main as view
 except ImportError as error:
 	# Output expected ImportErrors.
 	print(error.__class__.__name__ + ": " + error.message)
+	view = importlib.import_module('views.view_main', '.')
 except Exception as exception:
 	# Output unexpected Exceptions.
 	print(exception, False)
 	print(exception.__class__.__name__ + ": " + exception.message)
-	view = importlib.import_module('views.init', '.')
+	view = importlib.import_module('views.view_main', '.')
 
 
-def part(str,side):
+def part(str, side):
     # split the tring by '.'
     name, ext = str.split('.')
 
@@ -29,15 +30,16 @@ def part(str,side):
     else:
         return ext
 
+
 def load_lib():
     global libs, lib_names
     names = os.listdir(libs_path)
     for l in names:
-        if l != '__pycache__' :
-            if part(l,0) == 'py':
-                LIB_NAME = 'lib.'+part(l,1)
-                print(LIB_NAME)
-                lib_names.append(part(l,1)) 
+        if l != '__pycache__':
+            if part(l, 0) == 'py':
+                LIB_NAME = 'lib.'+part(l, 1)
+                # d.log('LIBS',LIB_NAME)
+                lib_names.append(part(l, 1))
                 # loading the libs
                 libs.append(importlib.import_module(LIB_NAME, '.'))
 
@@ -67,22 +69,20 @@ lib_names = list()
 libs = list()
 
 
-
-
 def main():
     load_lib()
 
     designer = libs[1].Designer(find_module('layer'),
-            find_module('camera'),
-            find_module('pointer'),
-            find_module('rect'),
-            find_module('tile'),path=path)
+                                find_module('camera'),
+                                find_module('pointer'),
+                                find_module('rect'),
+                                find_module('tile'), path=path)
 
     # designer.main()
     # create_new_project()
 
     app = wx.App()
-    view.MainWindow(None, "Node Editor", find_module('node'),designer)
+    view.MainWindow(None, "Node Editor", find_module('node'), designer)
     app.MainLoop()
 
 

@@ -16,7 +16,10 @@ Copyright {2017} {siddhartha singh | sidd5sci@gmail.com}
 
 
 import wx
+import wx.xrc
 import wx.aui
+import wx.dataview
+import wx.propgrid as pg
 import os
 import threading
 global pygame # when we import it, let's keep its proper name!
@@ -33,7 +36,7 @@ class MainWindow(wx.aui.AuiMDIParentFrame):
         # super(NodeEditor, self).__init__(parent, title=title,size=(550, 550))
 
         wx.aui.AuiMDIParentFrame.__init__(self, parent, -1,
-                                          title=" PyTrack v 1.0 ",
+                                          title=" PyTrack v 1.0.1 ",
                                           size=(640,480),
                                           style=wx.DEFAULT_FRAME_STYLE)
         self.node_module = args[0]
@@ -52,10 +55,49 @@ class MainWindow(wx.aui.AuiMDIParentFrame):
         self.Maximize(True)
         self.Centre()
         self.Show()
-        s =sizerMain()
+
+        self.bSizer1 = wx.BoxSizer( wx.HORIZONTAL )
+		
+        self.m_auinotebook1 = wx.aui.AuiNotebook( self, wx.ID_ANY, wx.DefaultPosition, wx.Size( 550,-1 ), wx.aui.AUI_NB_DEFAULT_STYLE )
+		
+        self.bSizer1.Add( self.m_auinotebook1, 1, wx.EXPAND |wx.ALL, 5 )
+		
+        bSizer2 = wx.BoxSizer( wx.VERTICAL )
+    
+        self.m_dataViewCtrl1 = wx.dataview.DataViewCtrl( self, wx.ID_ANY, wx.DefaultPosition, wx.Size( 130,200 ), 0 )
+        bSizer2.Add( self.m_dataViewCtrl1, 0, wx.ALL, 5 )
+    
+        self.m_propertyGridManager1 = pg.PropertyGridManager(self, wx.ID_ANY, wx.DefaultPosition, wx.Size( 130,200 ), wx.propgrid.PGMAN_DEFAULT_STYLE)
+        self.m_propertyGridManager1.SetExtraStyle( wx.propgrid.PG_EX_MODE_BUTTONS ) 
+    
+        self.m_propertyGridPage1 = self.m_propertyGridManager1.AddPage( u"Page", wx.NullBitmap );
+        self.m_propertyGridItem1 = self.m_propertyGridPage1.Append( pg.StringProperty( u"Name", u"Name" ) ) 
+        self.m_propertyGridItem6 = self.m_propertyGridPage1.Append( pg.StringProperty( u"Name1", u"Name1" ) ) 
+        self.m_propertyGridItem7 = self.m_propertyGridPage1.Append( pg.StringProperty( u"Name2", u"Name2" ) ) 
+        self.m_propertyGridItem8 = self.m_propertyGridPage1.Append( pg.StringProperty( u"Name3", u"Name3" ) ) 
+        self.m_propertyGridItem9 = self.m_propertyGridPage1.Append( pg.StringProperty( u"Name4", u"Name4" ) ) 
+        self.m_propertyGridItem2 = self.m_propertyGridPage1.Append( pg.StringProperty( u"Name5", u"Name5" ) ) 
+        self.m_propertyGridItem3 = self.m_propertyGridPage1.Append( pg.StringProperty( u"Name6", u"Name6" ) ) 
+        self.m_propertyGridItem4 = self.m_propertyGridPage1.Append( pg.StringProperty( u"Name7", u"Name7" ) ) 
+        self.m_propertyGridItem5 = self.m_propertyGridPage1.Append( pg.StringProperty( u"Name8", u"Name8" ) ) 
+        bSizer2.Add( self.m_propertyGridManager1, 0, wx.ALL, 5 )
+    
+    
+        self.bSizer1.Add( bSizer2, 1, wx.EXPAND, 5 )
+    
+    
+        self.SetSizer( self.bSizer1 )
+        self.Layout()
+    
+        self.Centre( wx.BOTH )
+	
+	# def __del__( self ):
+	# 	pass
+	
+		
 
     def sizerMain(self):
-        return  wx.sizer(wx.HORIZONTAL)
+        return  self.bSizer1
     
     def onNewChild(self, evt):
         self.count += 1
@@ -71,16 +113,49 @@ class MainWindow(wx.aui.AuiMDIParentFrame):
         child.Show()
 
     def MakeMenuBar(self):
-        mb = wx.MenuBar()
-        menu = wx.Menu()
-        item = menu.Append(-1, "New SDL child window\tCtrl-N")
-        self.Bind(wx.EVT_MENU, self.onNewChild, item)
-        item = menu.Append(-1, "New node window\tCtrl-N")
-        self.Bind(wx.EVT_MENU, self.onNewNode, item)
-        item = menu.Append(-1, "Close parent")
-        self.Bind(wx.EVT_MENU, self.onDoClose, item)
-        mb.Append(menu, "&File")
-        return mb
+        
+        
+        
+	# m_menubar1 = wx.MenuBar( 0 )
+	# m_menubar1.SetForegroundColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_BACKGROUND ) )
+	# m_menubar1.SetBackgroundColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_INACTIVECAPTIONTEXT ) )
+	
+	# m_File = wx.Menu()
+	# item = m_File.Append( -1, u"New Project\tCtrl-N" )
+	# item = m_File.Append( -1, u"Open Project\tCtrl-O" )
+	# item = m_File.Append( -1, u"Close Project\tCtrl-X" )
+	# item = m_File.Append( -1, u"Close All" )
+	# self.Bind(wx.EVT_MENU, self.onDoClose, item)
+	
+	# m_menubar1.Append( m_File, u"File" ) 
+	
+	# m_Edit = wx.Menu()
+	# m_menubar1.Append( m_Edit, u"Edit" ) 
+	
+	# m_View = wx.Menu()
+	# item = m_View.Append( -1, u"Designer\tCtrl-D" )
+	# self.Bind(wx.EVT_MENU, self.onNewNode, item)
+	# item = m_View.Append( -1, u"Node Editor\tCtrl-E")
+	# self.Bind(wx.EVT_MENU, self.onNewChild, item)
+	
+	# m_menubar1.Append( m_View, u"View" ) 
+	
+	mb = wx.MenuBar()
+	menu = wx.Menu()
+	item = menu.Append(-1, "New SDL child window\tCtrl-N")
+	self.Bind(wx.EVT_MENU, self.onNewChild, item)
+	item = menu.Append(-1, "New node window\tCtrl-N")
+	self.Bind(wx.EVT_MENU, self.onNewNode, item)
+	item = menu.Append(-1, "Close parent")
+	self.Bind(wx.EVT_MENU, self.onDoClose, item)
+	mb.Append(menu, "&View")
+
+
+	#self.SetMenuBar( self.m_menubar1 )
+	return mb
+	
+		
+        return m_menubar1
     
     
 
@@ -316,25 +391,14 @@ class ChildFrameSDL(wx.aui.AuiMDIChildFrame):
             p = SDLPanel(self, -1, (640,480),args[0])
         else:
             p = NodeEditor(self, -1, (640,480),args[0])
-        # bSizer1 = wx.BoxSizer( wx.HORIZONTAL  )
-
-        #sizer = wx.BoxSizer(wx.HORIZONTAL)
         
-        self.m_scrolledWindow1 = wx.ScrolledWindow( self, wx.ID_ANY, wx.DefaultPosition, wx.Size( 10,-1 ), wx.HSCROLL|wx.VSCROLL )
-		
-        self.m_scrolledWindow1.SetScrollRate( 5, 5 )
-		
-        self.m_scrolledWindow1.SetMaxSize( wx.Size( 100,-1 ) )
 
-		
         s = parent.sizerMain()
         
-        s.Add( self.m_scrolledWindow1, 1, wx.EXPAND |wx.ALL,5 )
+        s.Add(p, 1, wx.EXPAND |wx.ALL, 5)
+        self.SetSizer(s)
         
-        s.Add(p, 1, wx.EXPAND)
-        self.SetSizer(sizer)
-        
-        wx.CallAfter(self.Layout)
+        # wx.CallAfter(self.Layout)
 
 class SDLThread:
     def __init__(self,designer):
