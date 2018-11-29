@@ -17,7 +17,7 @@ Copyright {2017} {siddhartha singh | sidd5sci@gmail.com}
 
 import wx
 import wx.xrc
-import wx.aui
+import wx.aui 
 import wx.dataview
 import wx.propgrid as pg
 import os
