@@ -73,19 +73,10 @@ def main():
     load_lib()
 
     designer = libs[1].Designer(find_module('layer'),
-<<<<<<< HEAD
-            find_module('camera'),
-            find_module('pointer'),
-            find_module('rect'),
-            find_module('tile'),path=path)
-    designer.main()
-    #create_new_project()
-=======
                                 find_module('camera'),
                                 find_module('pointer'),
                                 find_module('rect'),
                                 find_module('tile'), path=path)
->>>>>>> test
 
     # designer.main()
     # create_new_project()
@@ -96,8 +87,4 @@ def main():
 
 
 if __name__ == "__main__":
-<<<<<<< HEAD
-        main()
-=======
 	main()
->>>>>>> test
