@@ -9,7 +9,7 @@ from debuger import *
 import wx
 
 try:
-    import views.view_main as view
+        import views.view_main as view
 except ImportError as error:
 	# Output expected ImportErrors.
 	print(error.__class__.__name__ + ": " + error.message)
