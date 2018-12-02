@@ -1,7 +1,7 @@
 from paths import *
 import os
 import importlib
-from debuger import *
+debuger = importlib.import_module('lib.debuger','.')
 #import tkinter as tk
 #from tkinter import ttk
 ##import views.view_node_editor as view
@@ -9,7 +9,7 @@ from debuger import *
 import wx
 
 try:
-        import views.view_main1 as view
+    import views.view_main1 as view
 except ImportError as error:
 	# Output expected ImportErrors.
 	print(error.__class__.__name__ + ": " + error.message)
@@ -64,7 +64,7 @@ def create_new_project():
 #######################################################
 ### globals
 #######################################################
-d = debuger()
+d = debuger.debuger()
 lib_names = list()
 libs = list()
 
@@ -72,7 +72,7 @@ libs = list()
 def main():
     load_lib()
 
-    designer = libs[1].Designer(find_module('layer'),
+    designer = find_module('designer').Designer(find_module('layer'),
                                 find_module('camera'),
                                 find_module('pointer'),
                                 find_module('rect'),

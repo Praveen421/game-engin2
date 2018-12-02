@@ -24,6 +24,7 @@ class MyDialog ( wx.Dialog ):
 		
 		bSizer1 = wx.BoxSizer( wx.VERTICAL )
 		
+		# first panel
 		self.m_panel2 = wx.Panel( self, wx.ID_ANY, wx.DefaultPosition, wx.Size( -1,-1 ), wx.TAB_TRAVERSAL )
 		self.m_panel2.SetBackgroundColour( wx.Colour( 12, 24, 33 ) )
 		
@@ -34,16 +35,17 @@ class MyDialog ( wx.Dialog ):
 		self.m_staticText1.SetForegroundColour( wx.Colour( 14, 124, 123 ) )
 		
 		bSizer2.Add( self.m_staticText1, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
-		
+		# enter text
 		self.m_textCtrl1 = wx.TextCtrl( self.m_panel2, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.Size( 340,-1 ), 0 )
 		self.m_textCtrl1.SetBackgroundColour( wx.Colour( 27, 42, 65 ) )
 		
 		bSizer2.Add( self.m_textCtrl1, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
-		
+		# create btn
 		self.m_button1 = wx.Button( self.m_panel2, wx.ID_ANY, u"Create", wx.DefaultPosition, wx.DefaultSize, wx.NO_BORDER )
 		self.m_button1.SetForegroundColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_INACTIVECAPTION ) )
 		self.m_button1.SetBackgroundColour( wx.Colour( 50, 74, 95 ) )
-		
+		self.Bind(wx.EVT_BUTTON, self.OnClick, self.m_button1)
+
 		bSizer2.Add( self.m_button1, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
 		
 		bSizer6 = wx.BoxSizer( wx.VERTICAL )
@@ -55,12 +57,14 @@ class MyDialog ( wx.Dialog ):
 		self.m_panel2.SetSizer( bSizer2 )
 		self.m_panel2.Layout()
 		bSizer2.Fit( self.m_panel2 )
+		## adding panel 2
 		bSizer1.Add( self.m_panel2, 0, wx.EXPAND |wx.ALL, 5 )
 		
-		self.m_panel4 = wx.Panel( self, wx.ID_ANY, wx.DefaultPosition, wx.Size( 100,100 ), wx.TAB_TRAVERSAL )
+		# second panel
+		self.m_panel4 = wx.Panel( self, wx.ID_ANY, wx.DefaultPosition, wx.Size( -1,-1 ), wx.TAB_TRAVERSAL )
 		self.m_panel4.SetBackgroundColour( wx.Colour( 12, 24, 33 ) )
 		
-		fgSizer1 = wx.FlexGridSizer( 0, 2, 0, 0 )
+		fgSizer1 = wx.FlexGridSizer( 2, 2, 0, 0 )
 		fgSizer1.SetFlexibleDirection( wx.BOTH )
 		fgSizer1.SetNonFlexibleGrowMode( wx.FLEX_GROWMODE_SPECIFIED )
 		
@@ -74,25 +78,52 @@ class MyDialog ( wx.Dialog ):
 		
 		fgSizer1.Add( self.m_checkBox2, 0, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL, 5 )
 		
-		self.m_bpButton1 = wx.BitmapButton( self.m_panel4, wx.ID_ANY, wx.Bitmap( u"G:\\landscape.bmp", wx.BITMAP_TYPE_ANY ), wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_bpButton1 = wx.BitmapButton( self.m_panel4, wx.ID_ANY, wx.Bitmap( u"resourses/UI/landscape.bmp", wx.BITMAP_TYPE_ANY ), wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.Bind(wx.EVT_BUTTON, self.OnClickLandscape, self.m_bpButton1)
 		self.m_bpButton1.SetForegroundColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_INACTIVEBORDER ) )
+		
 		
 		fgSizer1.Add( self.m_bpButton1, 0, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL, 5 )
 		
-		self.m_bpButton2 = wx.BitmapButton( self.m_panel4, wx.ID_ANY, wx.Bitmap( u"G:\\portrate.bmp", wx.BITMAP_TYPE_ANY ), wx.DefaultPosition, wx.DefaultSize, wx.BU_AUTODRAW )
+		self.m_bpButton2 = wx.BitmapButton( self.m_panel4, wx.ID_ANY, wx.Bitmap( u"resourses/UI/portrait.bmp", wx.BITMAP_TYPE_ANY ), wx.DefaultPosition, wx.DefaultSize, wx.BU_AUTODRAW )
+		self.Bind(wx.EVT_BUTTON, self.OnClickPortrait, self.m_bpButton2)
+		
 		fgSizer1.Add( self.m_bpButton2, 0, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL, 5 )
 		
 		
 		self.m_panel4.SetSizer( fgSizer1 )
 		self.m_panel4.Layout()
+		## adding panel 4
 		bSizer1.Add( self.m_panel4, 0, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL, 5 )
 		
-		
+		## adding sizer
 		self.SetSizer( bSizer1 )
 		self.Layout()
 		
 		self.Centre( wx.BOTH )
 	
+	def OnClick(self,evt):
+		print(self.m_textCtrl1.GetValue())
+		print(self.m_checkBox1.GetValue())
+		print(self.m_checkBox2.GetValue())
+	
+	def OnClickLandscape(self,evt):
+		k = self.m_checkBox1.GetValue()
+		if k == False:
+			self.m_checkBox1.SetValue(True)
+			self.m_checkBox2.SetValue(False)
+		else:
+			self.m_checkBox1.SetValue(False)
+		print("LANDSCAPE:",k)
+	
+	def OnClickPortrait(self,evt):
+		k = self.m_checkBox2.GetValue()
+		if k == False:
+			self.m_checkBox2.SetValue(True)
+			self.m_checkBox1.SetValue(False)
+		else:
+			self.m_checkBox2.SetValue(False)
+		print("PORTRAIT:",k)
 	def __del__( self ):
 		pass
 	
