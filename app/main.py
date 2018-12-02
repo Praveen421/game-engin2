@@ -9,16 +9,16 @@ from debuger import *
 import wx
 
 try:
-        import views.view_main as view
+        import views.view_main1 as view
 except ImportError as error:
 	# Output expected ImportErrors.
 	print(error.__class__.__name__ + ": " + error.message)
-	view = importlib.import_module('views.view_main', '.')
+	view = importlib.import_module('views.view_main1', '.')
 except Exception as exception:
 	# Output unexpected Exceptions.
 	print(exception, False)
 	print(exception.__class__.__name__ + ": " + exception.message)
-	view = importlib.import_module('views.view_main', '.')
+	view = importlib.import_module('views.view_main1', '.')
 
 
 def part(str, side):
