@@ -14,9 +14,9 @@ import wx.xrc
 ## Class Project
 ###########################################################################
 
-class Project ( wx.Dialog ):
+class MyDialog ( wx.Dialog ):
 	
-	def __init__( self, parent ):
+	def __init__( self, parent):
 		wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = u"New Project", pos = wx.DefaultPosition, size = wx.Size( 563,253 ), style = wx.DEFAULT_DIALOG_STYLE )
 		
 		self.SetSizeHintsSz( wx.DefaultSize, wx.DefaultSize )
@@ -97,10 +97,10 @@ class Project ( wx.Dialog ):
 		pass
 	
 	
-
-app = wx.App(False)
-frame = Project(None)
-frame.Show()
-app.MainLoop()
+if __name__ == "__main__":
+	app = wx.App(False)
+	frame = Project(None)
+	frame.Show()
+	app.MainLoop()
         
        

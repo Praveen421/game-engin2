@@ -66,10 +66,21 @@ https://stackoverflow.com/questions/2348183/graphicspath-doesnt-always-refresh-i
 https://stackoverflow.com/questions/45448625/persistent-drawing-temporary-overlay-with-wx-paintdc
 
 https://github.com/wxWidgets/Phoenix/blob/master/demo/Overlay.py
+
+
 ```
 ### wxPython Refrence 
 ```sh
 https://wiki.wxpython.org/FrontPage
+
+https://www.youtube.com/watch?v=XVE673wsCEQ&list=PL1FgJUcJJ03vIgXI9BvOBdoc0S3PuzcRb
+
+https://github.com/wxWidgets/wxPython/blob/master/demo/PopupWindow.py
+
+https://www.tutorialspoint.com/wxpython/wxpython_dockable_windows.htm
+
+file dialog
+https://wxpython.org/Phoenix/docs/html/wx.FileDialog.html
 ```
 ### import rules
 ```sh 

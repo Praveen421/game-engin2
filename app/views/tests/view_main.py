@@ -31,24 +31,26 @@ import wx.dataview
 import wx.propgrid as pg
 import os
 import threading
-import importlib
 global pygame  # when we import it, let's keep its proper name!
 global pygame_init_flag
 pygame_init_flag = False
 
 sys.path.insert(0, "..")
-# from lxml import etree, objectify
 
 
-class MainWindow(wx.Frame):
+class MainWindow(wx.aui.AuiMDIParentFrame):
     def __init__(self, parent, title, *args):
-        super(MainWindow, self).__init__(parent, title=title, size=(550, 550))
+        # super(NodeEditor, self).__init__(parent, title=title,size=(550, 550))
 
+        wx.aui.AuiMDIParentFrame.__init__(self, parent, -1,
+                                          title=" PyTrack v 1.0.1 ",
+                                          size=(640, 480),
+                                          style=wx.DEFAULT_FRAME_STYLE)
         self.node_module = args[0]
         self.designer = args[1]
         self.count = 0
-	
-	self.initEditor()
+
+        self.initEditor()
 
     def initEditor(self):
 
@@ -61,95 +63,81 @@ class MainWindow(wx.Frame):
         self.Centre()
         self.Show()
 
-	self.SetBackgroundColour(wx.Colour(12, 24, 33))
-        bSizer1 = wx.BoxSizer(wx.HORIZONTAL)
+        self.bSizer1 = wx.BoxSizer(wx.HORIZONTAL)
 
-	self.m_panel1 = wx.Panel(
-	self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL)
-	bSizer2 = wx.BoxSizer(wx.HORIZONTAL)
-	# scroll window
-	self.m_scrolledWindow4 = wx.ScrolledWindow(
-	self.m_panel1, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.HSCROLL | wx.VSCROLL)
-	self.m_scrolledWindow4.SetScrollRate(5, 5)
-	self.m_scrolledWindow4.SetMaxSize(wx.Size(150, -1))
+        self.m_auinotebook1 = wx.aui.AuiNotebook(
+            self, wx.ID_ANY, wx.DefaultPosition, wx.Size(-1, -1), wx.aui.AUI_NB_DEFAULT_STYLE)
 
-	bSizer2.Add(self.m_scrolledWindow4, 1, wx.EXPAND | wx.ALL, 5)
-	# notebook
-	self.m_notebook1 = wx.Notebook(
-	self.m_panel1, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, 0)
-	page1 = PageOne(self.m_notebook1)
-        page2 = PageTwo(self.m_notebook1, self.designer)
-        page3 = PageThree(self.m_notebook1, self.node_module)
+        self.bSizer1.Add(self.m_auinotebook1, 1, wx.EXPAND | wx.ALL, 5)
 
-	self.m_notebook1.AddPage(page1, " Start ")
-	self.m_notebook1.AddPage(page2, " Design ")
-	self.m_notebook1.AddPage(page3, " Nodes ")
+        bSizer2 = wx.BoxSizer(wx.VERTICAL)
 
-	bSizer2.Add(self.m_notebook1, 1, wx.EXPAND | wx.ALL, 5)
-	# panel for data tree and properties
-	self.m_panel3 = wx.Panel(self.m_panel1, wx.ID_ANY,
-	                         wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL)
-	bSizer3 = wx.BoxSizer(wx.VERTICAL)
+        self.m_dataViewCtrl1 = wx.dataview.DataViewCtrl(
+            self, wx.ID_ANY, wx.DefaultPosition, wx.Size(170, 300), 0)
+        bSizer2.Add(self.m_dataViewCtrl1, 0, wx.ALL, 5)
 
-	self.m_treeCtrl1 = wx.TreeCtrl(
-	self.m_panel3, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TR_DEFAULT_STYLE)
-	self.m_treeCtrl1.SetMinSize(wx.Size(200, 400))
-	self.m_treeCtrl1.SetMaxSize(wx.Size(200, -1))
+        self.m_propertyGridManager1 = pg.PropertyGridManager(
+            self, wx.ID_ANY, wx.DefaultPosition, wx.Size(170, 300), wx.propgrid.PGMAN_DEFAULT_STYLE)
+        self.m_propertyGridManager1.SetExtraStyle(
+            wx.propgrid.PG_EX_MODE_BUTTONS)
 
-	self.root = self.m_treeCtrl1.AddRoot('Root')
-	self.m_treeCtrl1.SetPyData(self.root, ('key', 'value'))
-	self.m_treeCtrl1.AppendItem(self.root, 'Assets')
-	self.m_treeCtrl1.Expand(self.root)
+        self.m_propertyGridPage1 = self.m_propertyGridManager1.AddPage(
+            u"Page", wx.NullBitmap)
+        self.m_propertyGridItem1 = self.m_propertyGridPage1.Append(
+            pg.StringProperty(u"Name", u"Name"))
+        self.m_propertyGridItem6 = self.m_propertyGridPage1.Append(
+            pg.StringProperty(u"Name1", u"Name1"))
+        self.m_propertyGridItem7 = self.m_propertyGridPage1.Append(
+            pg.StringProperty(u"Name2", u"Name2"))
+        self.m_propertyGridItem8 = self.m_propertyGridPage1.Append(
+            pg.StringProperty(u"Name3", u"Name3"))
+        self.m_propertyGridItem9 = self.m_propertyGridPage1.Append(
+            pg.StringProperty(u"Name4", u"Name4"))
+        self.m_propertyGridItem2 = self.m_propertyGridPage1.Append(
+            pg.StringProperty(u"Name5", u"Name5"))
+        self.m_propertyGridItem3 = self.m_propertyGridPage1.Append(
+            pg.StringProperty(u"Name6", u"Name6"))
+        self.m_propertyGridItem4 = self.m_propertyGridPage1.Append(
+            pg.StringProperty(u"Name7", u"Name7"))
+        self.m_propertyGridItem5 = self.m_propertyGridPage1.Append(
+            pg.StringProperty(u"Name8", u"Name8"))
+        bSizer2.Add(self.m_propertyGridManager1, 0, wx.ALL, 5)
 
-	bSizer3.Add(self.m_treeCtrl1, 0, wx.ALL, 5)
+        self.bSizer1.Add(bSizer2, 1, wx.EXPAND, 5)
 
-	self.m_panel3.SetSizer(bSizer3)
-	self.m_panel3.Layout()
-	bSizer3.Fit(self.m_panel3)
+        self.SetSizer(self.bSizer1)
+        self.Layout()
 
-	bSizer2.Add(self.m_panel3, 1, wx.EXPAND | wx.ALL, 5)
-	# adding sizers
-	self.m_panel1.SetSizer(bSizer2)
-	self.m_panel1.Layout()
-	bSizer2.Fit(self.m_panel1)
-	bSizer1.Add(self.m_panel1, 1, wx.EXPAND | wx.ALL, 5)
+        self.Centre(wx.BOTH)
 
-	self.SetSizer(bSizer1)
-	self.Layout()
+	# def __del__( self ):
+	# 	pass
+
+    def sizerMain(self):
+        return self.bSizer1
 
     def onNewChild(self, evt):
         self.count += 1
-        # try:
-        #     child = ChildFrameSDL(self, self.count, "sdl", self.designer)
-        #     # child = ChildFrameSDL(self.m_auinotebook1, self.count, "sdl", self.designer)
-        # except Exception as data:
-        #     print (data)
+        try:
+            child = ChildFrameSDL(self, self.count, "sdl", self.designer)
+            # child = ChildFrameSDL(self.m_auinotebook1, self.count, "sdl", self.designer)
+        except Exception as data:
+            print (data)
 
-        # child.Show()
+        child.Show()
 
     def onDoClose(self, evt):
         self.Close()
 
     def onNewNode(self, evt):
         self.count += 1
-        # child = ChildFrameSDL(self, self.count, "node", self.node_module)
-        # child.Show()
+        child = ChildFrameSDL(self, self.count, "node", self.node_module)
+        child.Show()
 
     def onNewProject(self, evt):
-        # child = MyDialog(self, "New Project").ShowModal()
-	dialog = importlib.import_module('views.dialog.dialog_new_project', '.')
-        dialog.MyDialog(self).ShowModal()
-	
-    def onOpenProject(self,evt):
-	
-	dialog = importlib.import_module('views.dialog.dialog_open_project', '.')
-        dialog.MyDialog(self).ShowModal()
-    
-    def onSaveAsProject(self,evt):
-	
-	dialog = importlib.import_module('views.dialog.dialog_save_project', '.')
-        dialog.MyDialog(self).ShowModal()
-    
+        child = MyDialog(self, "New Project").ShowModal()
+        # print a
+
     def MakeMenuBar(self):
         m_menubar1 = wx.MenuBar(0)
         m_menubar1.SetForegroundColour(
@@ -161,26 +149,19 @@ class MainWindow(wx.Frame):
         item = m_File.Append(-1, u"New Project\tCtrl-N")
         self.Bind(wx.EVT_MENU, self.onNewProject, item)
         item = m_File.Append(-1, u"Open Project\tCtrl-O")
-        self.Bind(wx.EVT_MENU, self.onOpenProject, item)
+        self.Bind(wx.EVT_MENU, self.onNewProject, item)
         item = m_File.Append(-1, u"Close Project")
-        item = m_File.Append(-1, u"Save ..\tCtrl-S")
-        item = m_File.Append(-1, u"Save As ..\tCtrl-Shift-S")
-	self.Bind(wx.EVT_MENU,self.onSaveAsProject,item)
-        item = m_File.Append(-1, u"Import\tCtrl-M")
-        item = m_File.Append(-1, u"Export\tCtrl-E")
+        item = m_File.Append(-1, u"Save ..")
+        item = m_File.Append(-1, u"Save As ..")
+        item = m_File.Append(-1, u"Import")
+        item = m_File.Append(-1, u"Export")
         item = m_File.Append(-1, u"Close All")
         self.Bind(wx.EVT_MENU, self.onDoClose, item)
-
+        
+        
         m_menubar1.Append(m_File, u"File")
 
         m_Edit = wx.Menu()
-	item = m_Edit.Append(-1, u"Undo\tCtrl-Z")
-        item = m_Edit.Append(-1, u"Redo\tCtrl-Shift-Z")
-        item = m_Edit.Append(-1, u"Cut\tCtrl-X")
-        item = m_Edit.Append(-1, u"Copy\tCtrl-C")
-        item = m_Edit.Append(-1, u"Paste\tCtrl-V")
-	
-
         m_menubar1.Append(m_Edit, u"Edit")
 
         m_View = wx.Menu()
@@ -207,70 +188,6 @@ class MainWindow(wx.Frame):
         return m_menubar1
 
 
-class XmlTree(wx.TreeCtrl):
-
-    def __init__(self, parent, id, pos, size, style):
-        wx.TreeCtrl.__init__(self, parent, id, pos, size, style)
-
-        try:
-            with open(parent.xml_path) as f:
-                xml = f.read()
-        except IOError:
-            print('Bad file')
-            return
-        except Exception as e:
-            print('Really bad error')
-            print(e)
-            return
-
-        self.xml_root = objectify.fromstring(xml)
-
-        root = self.AddRoot(self.xml_root.tag)
-        self.SetPyData(root, ('key', 'value'))
-
-        for top_level_item in self.xml_root.getchildren():
-            child = self.AppendItem(root, top_level_item.tag)
-            self.SetItemHasChildren(child)
-            if top_level_item.attrib:
-                self.SetPyData(child, top_level_item.attrib)
-
-        self.Expand(root)
-        self.Bind(wx.EVT_TREE_ITEM_EXPANDING, self.onItemExpanding)
-
-    def onItemExpanding(self, event):
-        item = event.GetItem()
-        book_id = self.GetPyData(item)
-
-        for top_level_item in self.xml_root.getchildren():
-            if top_level_item.attrib == book_id:
-                book = top_level_item
-                self.SetPyData(item, top_level_item)
-                self.add_book_elements(item, book)
-                break
-
-    def add_book_elements(self, item, book):
-        for element in book.getchildren():
-            child = self.AppendItem(item, element.tag)
-            if element.getchildren():
-                self.SetItemHasChildren(child)
-
-            if element.attrib:
-                self.SetPyData(child, element.attrib)
-
-
-class TreePanel(wx.Panel):
-
-    def __init__(self, parent):
-        wx.Panel.__init__(self, parent)
-
-        self.tree = MyTree(self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize,
-                           wx.TR_HAS_BUTTONS)
-
-        sizer = wx.BoxSizer(wx.VERTICAL)
-        sizer.Add(self.tree, 0, wx.EXPAND)
-        self.SetSizer(sizer)
-
-
 class PageOne(wx.Panel):
     def __init__(self, parent):
         wx.Panel.__init__(self, parent)
@@ -278,19 +195,103 @@ class PageOne(wx.Panel):
 
 
 class PageTwo(wx.Panel):
-    def __init__(self, parent, *args):
+    def __init__(self, parent):
         wx.Panel.__init__(self, parent)
-        # t = wx.StaticText(self, -1, "This is a PageTwo object", (40, 40))
-        p = SDLPanel(self, -1, (640, 480), args[0])
+        t = wx.StaticText(self, -1, "This is a PageTwo object", (40, 40))
 
 
 class PageThree(wx.Panel):
-    def __init__(self, parent, *args):
+    def __init__(self, parent):
         wx.Panel.__init__(self, parent)
-        # t = wx.StaticText(self, -1, "This is a PageThree object", (60, 60))
-        p = NodeEditor(self, -1, (640, 480), args[0])
+        t = wx.StaticText(self, -1, "This is a PageThree object", (60, 60))
 
 
+class MyDialog(wx.Dialog):
+  	 def __init__(self, parent, title):
+            super(MyDialog, self).__init__(parent, title=title, size=(550, 250))
+            self.SetSizeHintsSz(wx.DefaultSize, wx.DefaultSize)
+            self.SetBackgroundColour(wx.Colour(12, 24, 33))
+
+            bSizer1 = wx.BoxSizer(wx.VERTICAL)
+
+            self.m_panel2 = wx.Panel(
+                self, wx.ID_ANY, wx.DefaultPosition, wx.Size(-1, -1), wx.TAB_TRAVERSAL)
+            self.m_panel2.SetBackgroundColour(wx.Colour(12, 24, 33))
+
+            bSizer2 = wx.BoxSizer(wx.HORIZONTAL)
+
+            self.m_staticText1 = wx.StaticText(
+                self.m_panel2, wx.ID_ANY, u"Project Name", wx.DefaultPosition, wx.DefaultSize, 0)
+            self.m_staticText1.Wrap(-1)
+            self.m_staticText1.SetForegroundColour(wx.Colour(14, 124, 123))
+
+            bSizer2.Add(self.m_staticText1, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 5)
+
+            self.m_textCtrl1 = wx.TextCtrl(
+                self.m_panel2, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.Size(340, -1), 0)
+            self.m_textCtrl1.SetBackgroundColour(wx.Colour(27, 42, 65))
+
+            bSizer2.Add(self.m_textCtrl1, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 5)
+
+            self.m_button1 = wx.Button(self.m_panel2, wx.ID_ANY, u"Create",
+                                       wx.DefaultPosition, wx.DefaultSize, wx.NO_BORDER)
+            self.m_button1.SetForegroundColour(
+                wx.SystemSettings.GetColour(wx.SYS_COLOUR_INACTIVECAPTION))
+            self.m_button1.SetBackgroundColour(wx.Colour(50, 74, 95))
+
+            bSizer2.Add(self.m_button1, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 5)
+
+            bSizer6 = wx.BoxSizer(wx.VERTICAL)
+
+            bSizer2.Add(bSizer6, 1, wx.EXPAND, 5)
+
+            self.m_panel2.SetSizer(bSizer2)
+            self.m_panel2.Layout()
+            bSizer2.Fit(self.m_panel2)
+            bSizer1.Add(self.m_panel2, 0, wx.EXPAND | wx.ALL, 5)
+
+            self.m_panel4 = wx.Panel(
+                self, wx.ID_ANY, wx.DefaultPosition, wx.Size(100, 100), wx.TAB_TRAVERSAL)
+            self.m_panel4.SetBackgroundColour(wx.Colour(12, 24, 33))
+
+            fgSizer1 = wx.FlexGridSizer(0, 2, 0, 0)
+            fgSizer1.SetFlexibleDirection(wx.BOTH)
+            fgSizer1.SetNonFlexibleGrowMode(wx.FLEX_GROWMODE_SPECIFIED)
+
+            self.m_checkBox1 = wx.CheckBox(
+                self.m_panel4, wx.ID_ANY, u"Landscape", wx.DefaultPosition, wx.DefaultSize, 0)
+            self.m_checkBox1.SetForegroundColour(wx.Colour(14, 124, 123))
+
+            fgSizer1.Add(self.m_checkBox1, 0, wx.ALL | wx.ALIGN_CENTER_HORIZONTAL, 5)
+
+            self.m_checkBox2 = wx.CheckBox(
+                self.m_panel4, wx.ID_ANY, u"Portrait", wx.DefaultPosition, wx.DefaultSize, 0)
+            self.m_checkBox2.SetForegroundColour(wx.Colour(14, 124, 123))
+
+            fgSizer1.Add(self.m_checkBox2, 0, wx.ALL | wx.ALIGN_CENTER_HORIZONTAL, 5)
+
+            self.m_bpButton1 = wx.BitmapButton(self.m_panel4, wx.ID_ANY, wx.Bitmap(
+                u"G:\\landscape.bmp", wx.BITMAP_TYPE_ANY), wx.DefaultPosition, wx.DefaultSize, 0)
+            self.m_bpButton1.SetForegroundColour(
+                wx.SystemSettings.GetColour(wx.SYS_COLOUR_INACTIVEBORDER))
+
+            fgSizer1.Add(self.m_bpButton1, 0, wx.ALL | wx.ALIGN_CENTER_HORIZONTAL, 5)
+
+            self.m_bpButton2 = wx.BitmapButton(self.m_panel4, wx.ID_ANY, wx.Bitmap(
+                u"G:\\portrate.bmp", wx.BITMAP_TYPE_ANY), wx.DefaultPosition, wx.DefaultSize, wx.BU_AUTODRAW)
+            fgSizer1.Add(self.m_bpButton2, 0, wx.ALL | wx.ALIGN_CENTER_HORIZONTAL, 5)
+
+            self.m_panel4.SetSizer(fgSizer1)
+            self.m_panel4.Layout()
+            bSizer1.Add(self.m_panel4, 0, wx.ALL | wx.ALIGN_CENTER_HORIZONTAL, 5)
+
+            self.SetSizer(bSizer1)
+            self.Layout()
+
+            self.Centre(wx.BOTH)
+
+	
+		
 class NodeEditor(wx.Panel):
     def __init__(self, parent, ID, tplSize, *args):
         wx.Panel.__init__(self, parent, ID, size=tplSize)
@@ -370,11 +371,9 @@ class NodeEditor(wx.Panel):
                 for p in n.pins:
                     if p.selected == True:
                         if p._type_ == 'output':
-                            self.drawBezier(p.x+n.x, p.y+n.y,
-                                            evtPos[0], evtPos[1])
-                        else:
-                            self.drawBezier(
-                                evtPos[0], evtPos[1], p.x+n.x, p.y+n.y)
+                            self.drawBezier(p.x+n.x, p.y+n.y, evtPos[0], evtPos[1])
+                        else :
+                            self.drawBezier(evtPos[0], evtPos[1],p.x+n.x , p.y+n.y)
             self.displayNodes()
 
             try:
@@ -506,6 +505,28 @@ class NodeEditor(wx.Panel):
                 self.dc.SetFont(font)
                 self.dc.DrawText(n.title, n.x+10, n.y-20)
                 #n.conection()
+
+
+class ChildFrameSDL(wx.aui.AuiMDIChildFrame):
+    def __init__(self, parent, count, _type, *args):
+        wx.aui.AuiMDIChildFrame.__init__(self, parent, -1,
+                                         title="Child: %d" % count,size=(400,400))
+        # mb = parent.MakeMenuBar()
+        # menu = wx.Menu()
+        # item = menu.Append(-1, "This is child %d's menu" % count)
+        # mb.Append(menu, "&Child")
+        # self.SetMenuBar(mb)
+        if _type == "sdl":
+            p = SDLPanel(self, -1, (640, 480), args[0])
+        else:
+            p = NodeEditor(self, -1, (640, 480), args[0])
+
+        s = parent.sizerMain()
+
+        s.Add(p, 1, wx.EXPAND | wx.ALL, 5)
+        self.SetSizer(s)
+
+        # wx.CallAfter(self.Layout)
 
 
 class SDLThread:

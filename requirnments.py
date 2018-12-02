@@ -1,24 +1,55 @@
-if __name__ == "__main__":
-    pass
-
-
-
-'''
-
-
-
-SWIG
-======
-
-https://sourceforge.net/projects/swig/files/swigwin/swigwin-3.0.12/swigwin-3.0.12.zip/download?use_mirror=excellmedia
-
-1- copy swig.exe to the python installation folder (for ex C:/python27)
-
-2- open swigwin-3.0.12/Lib folder and copy all *.swg files to the C:/python27/lib or equivalent python path
-
-3- Open swigwin-3.0.12/lib/python and copy all the files to (C:/python27/lib)
-
-(Also make sure you have Microsoft Visual C++ Compiler for Python installed)
-
-These steps worked for me
-'''
+altgraph==0.15
+appdirs==1.4.3
+argh==0.26.2
+astroid==1.6.3
+bottle==0.12.13
+bottle-websocket==0.2.9
+Box2D==2.3.2
+certifi==2018.4.16
+cffi==1.11.5
+chardet==3.0.4
+colorama==0.3.9
+Django==2.1.1
+docutils==0.14
+Eel==0.9.10
+future==0.16.0
+gevent==1.3.6
+gevent-websocket==0.10.1
+gitdb2==2.0.4
+GitPython==2.1.11
+greenlet==0.4.15
+idna==2.6
+isort==4.3.4
+jedi==0.13.1
+Kivy==1.10.1
+Kivy-Garden==0.1.4
+lazy-object-proxy==1.3.1
+macholib==1.9
+mccabe==0.6.1
+numpy==1.13.1
+opencv-contrib-python==3.4.0.12
+parso==0.3.1
+pathtools==0.1.2
+pefile==2017.11.5
+Pillow==5.3.0
+pybullet==1.2.9
+pycparser==2.18
+pygame==1.9.3
+Pygments==2.2.0
+pygubu==0.9.8.2
+PyInstaller==3.3.1
+pylint==1.8.4
+pynput==1.3.10
+pypiwin32==220
+Pypubsub==4.0.0
+pytz==2018.5
+PyYAML==3.13
+requests==2.18.4
+six==1.11.0
+smmap2==2.0.4
+UNKNOWN==0.0.0
+urllib3==1.22
+watchdog==0.9.0
+whichcraft==0.4.1
+wrapt==1.10.11
+wxPython==4.0.3
