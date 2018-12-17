@@ -47,7 +47,7 @@ class colors(object):
 
 class Designer():
     def __init__(self,*args,**kwargs):
-        print("Designer work")
+        print("Designer works")
 
         ###############################################################
         ###     importing modules
@@ -68,7 +68,7 @@ class Designer():
         self.ABSPATH = kwargs['path']
 
         # screen height and width
-        self.width ,self.height = 800,600
+        self.width ,self.height = 1000,640
         # center of the screen | environment cooords
         self.cx,self.cy,self.cz = self.width/2,self.height/2, -5
         
@@ -76,13 +76,14 @@ class Designer():
         self.color = colors()
 
         # initilise the main camera
-        self.cam = self.Camera_module.camera((-0,0,30))
+        self.cam = self.Camera_module.camera((-50,-50,100))
         # world screen scales
         self.pixelFactor = 200/self.cam.pos[2]
         self.scalex,self.scaley = -self.width/self.pixelFactor,-self.height/self.pixelFactor
 
         self.pos = (0,0) # pygame.mouse.get_pos()
         self.pointer = self.Pointer_module.Pointer(self.pos[0],self.pos[1],100,100)
+        self.pointer.mode_2 = True # select mode
         #pointer.textureEnabled = False
         
         # initilizing the layers 
@@ -104,8 +105,11 @@ class Designer():
         self.pointer.setFrame(self.assets[self.currentPointerAssets][1])
         self.pointer.textureName = self.assets[self.currentPointerAssets][2]
         self.sentToBack = False
-
+        # global pointer pos buffer
+        self.px,self.py = 0,0
         print (len(self.assets))
+        # uses to check if mouse is down and helps in draging objects
+        self.held = False
     
     def initPygame(self):
 
@@ -157,8 +161,8 @@ class Designer():
 
     def display(self):
 
-        pygame.draw.rect(self.screen,(119, 121, 119),(int(0-self.cam.pos[0]),int(0-self.cam.pos[1]),int(12000-self.cam.pos[0]),int(550-self.cam.pos[1])))
-        pygame.draw.rect(self.screen, (254,0,0,12), pygame.Rect(0, 0, 100, 50))
+        pygame.draw.rect(self.screen,(119, 121, 119),(int(0-self.cam.pos[0]),int(0-self.cam.pos[1]),int(800),int(480)))
+        # pygame.draw.rect(self.screen, (254,0,0,12), pygame.Rect(0, 0, 100, 50))
         
         for i in range(0,800,50):
             pygame.draw.line(self.screen,(100,100,100),(0-self.cam.pos[0],i-self.cam.pos[1]),(12000-self.cam.pos[0],i-self.cam.pos[1]),1)
@@ -167,11 +171,12 @@ class Designer():
             pygame.draw.line(self.screen,(100,100,100),(i-self.cam.pos[0],0-self.cam.pos[1]),(i-self.cam.pos[0],800-self.cam.pos[1]),1)
             
         if self.sentToBack:
-            if self.pointer.textureEnabled:
-                self.screen.blit(self.convertPILtoPygame(self.pointer.image),(int(self.pointer.x),int(self.pointer.y)))
-            else:
-                pygame.draw.rect(self.screen,self.pointer.color,(int(self.pointer.x),int(self.pointer.y),int(self.pointer.width),int(self.pointer.height)))
-        
+            if self.pointer.mode_1 == True:
+                if self.pointer.textureEnabled:
+                    self.screen.blit(self.convertPILtoPygame(self.pointer.image),(int(self.pointer.x),int(self.pointer.y)))
+                else:
+                    pygame.draw.rect(self.screen,self.pointer.color,(int(self.pointer.x),int(self.pointer.y),int(self.pointer.width),int(self.pointer.height)))
+            
             for layer in self.Layers:
                 if layer[2]:
                     for t in layer[1].tiles:        
@@ -190,11 +195,11 @@ class Designer():
                             self.screen.blit(self.convertPILtoPygame(t.texture),(int(x),int(y)))
                         else:
                             pygame.draw.rect(self.screen,self.pointer.color,(int(x),int(y),int(t.width),int(t.height)))
-                    
-            if self.pointer.textureEnabled:
-                self.screen.blit(self.convertPILtoPygame(self.pointer.image),(int(self.pointer.x),int(self.pointer.y)))
-            else:
-                pygame.draw.rect(self.screen,self.pointer.color,(int(self.pointer.x),int(self.pointer.y),int(self.pointer.width),int(self.pointer.height)))
+            if self.pointer.mode_1 == True:
+                if self.pointer.textureEnabled:
+                    self.screen.blit(self.convertPILtoPygame(self.pointer.image),(int(self.pointer.x),int(self.pointer.y)))
+                else:
+                    pygame.draw.rect(self.screen,self.pointer.color,(int(self.pointer.x),int(self.pointer.y),int(self.pointer.width),int(self.pointer.height)))
             
     def part(self,str):
         name,ext = str.split('.')
@@ -440,33 +445,74 @@ class Designer():
                     self.Layers[self.currentSelectedLayer][1].translate(0,1)
 
                 if event.key == pygame.K_r:
+                    # deselect all
                     self.Layers[self.currentSelectedLayer][1].deSelectAll()
                 if event.key == pygame.K_x:
+                    # remove selected tiles
                     self.Layers[self.currentSelectedLayer][1].deleteSelected()
                 if event.key == pygame.K_m:
+                    # import
                     self.Layers[self.currentSelectedLayer][1]._import()
                     
                     for t in self.Layers[self.currentSelectedLayer][1].tiles:
                         t.setImage(self.ImageSet(t))
-
-        if mouse_key[0] :
+                if event.key == pygame.K_p:
+                    if self.pointer.mode_2 == True:
+                        self.pointer.mode_2 = False
+                        self.pointer.mode_1 = True
+                    else :
+                        self.pointer.mode_1 = False
+                        self.pointer.mode_2 = True
         
-            # getting the current position of the mouse 
-            p = pygame.mouse.get_pos()
-            # convert the screen coordinates to world co-ordinates
-            x,y,z = self.screenToWorld([self.pointer.x,self.pointer.y])
-            t = self.Tile_module.Tile(x,y,self.pointer.width,self.pointer.height)
-            t.setImage(self.pointer.image)
-            t.setFrame(self.pointer.fx,self.pointer.fy,self.pointer.fWidth,self.pointer.fHeight)
-            t.textureName = self.pointer.textureName
-            t.textureEnabled = self.pointer.textureEnabled
-            t.color = self.pointer.color
-            if self.sentToBack:
-                self.Layers[self.currentSelectedLayer][1].addTileAtStart(t)
-                time.sleep(0.1)
+            if event.type == pygame.MOUSEBUTTONUP:
+                self.held = False
+                self.px = 0
+                self.py = 0
+            
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                self.held = True
+        
+        if mouse_key[0] :
+            if self.pointer.mode_1 == True:
+                # getting the current position of the mouse 
+                p = pygame.mouse.get_pos()
+                # convert the screen coordinates to world co-ordinates
+                x,y,z = self.screenToWorld([self.pointer.x,self.pointer.y])
+                t = self.Tile_module.Tile(x,y,self.pointer.width,self.pointer.height)
+                t.setImage(self.pointer.image)
+                t.setFrame(self.pointer.fx,self.pointer.fy,self.pointer.fWidth,self.pointer.fHeight)
+                t.textureName = self.pointer.textureName
+                t.textureEnabled = self.pointer.textureEnabled
+                t.color = self.pointer.color
+                if self.sentToBack:
+                    self.Layers[self.currentSelectedLayer][1].addTileAtStart(t)
+                    time.sleep(0.1)
+                else:
+                    self.Layers[self.currentSelectedLayer][1].addTile(t)
+                    time.sleep(0.1)
             else:
-                self.Layers[self.currentSelectedLayer][1].addTile(t)
-                time.sleep(0.1)
+                # getting the current position of the mouse 
+                p = pygame.mouse.get_pos()
+                # convert the screen coordinates to world co-ordinates
+                x,y,z = self.screenToWorld([self.pointer.x,self.pointer.y])
+                # drag the selected tiles                
+                if self.Layers[self.currentSelectedLayer][1].isInside(x,y):
+                    self.Layers[self.currentSelectedLayer][1].moveTo(x,y)
+                    self.held= True
+                else:
+                    # deselect all
+                    self.Layers[self.currentSelectedLayer][1].deSelectAll()
+                    if self.px == 0 and self.py == 0:
+                        self.px = self.pointer.x
+                        self.py = self.pointer.y
+                    else :   
+                        dx = self.px - self.pointer.x
+                        dy = self.py - self.pointer.y
+                        print("CAM:",self.cam.pos)
+                        print("POINTER:",self.pointer.x,self.pointer.y)
+                        print("DE",dx,dy)
+                        self.cam.drag(dx,dy,0)
+                        self.px,self.py = self.pointer.x,self.pointer.y
         if mouse_key[2]:
             # converting the pointer position to world cordinates
             x,y,z = self.screenToWorld([self.pointer.x,self.pointer.y])

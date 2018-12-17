@@ -9,7 +9,7 @@
 
 import wx
 import wx.xrc
-
+import importlib
 ###########################################################################
 ## Class Project
 ###########################################################################
@@ -106,7 +106,15 @@ class MyDialog ( wx.Dialog ):
 		print(self.m_textCtrl1.GetValue())
 		print(self.m_checkBox1.GetValue())
 		print(self.m_checkBox2.GetValue())
-	
+		
+		if self.m_textCtrl1.GetValue():
+			if self.m_checkBox1.GetValue() or self.m_checkBox2.GetValue():
+
+				project = importlib.import_module('controllers.project_controller','.')
+				p = project.Project()
+				p.createNewProject(self.m_textCtrl1.GetValue(),"land")
+		self.Close()
+		
 	def OnClickLandscape(self,evt):
 		k = self.m_checkBox1.GetValue()
 		if k == False:

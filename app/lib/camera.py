@@ -44,6 +44,12 @@ class camera:
 
         if key == 'left': self.pos[0] -= s
         if key == 'right': self.pos[0] += s 
+    def drag(self,dx,dy,dz):
+        
+        self.pos[2] += dz
+        self.pos[1] += dy
+        self.pos[0] += dx
+
     def rotateCam(self,dt,key,dtheta): 
          
         c1,s1 = math.cos(dtheta),math.sin(dtheta)
