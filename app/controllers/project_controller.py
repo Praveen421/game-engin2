@@ -22,3 +22,36 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 '''
+import os,time,random,math
+
+import importlib
+
+class Project():
+        
+        def __init__(self,*args,**kwargs):
+                pass
+                self.paths =  importlib.import_module('paths','.')
+        
+        def createNewProject(self,name,oriantation):
+                os.chdir(self.paths.projects_path)
+                # Create target Directory if don't exist
+                if not os.path.exists(name):
+                        os.mkdir(name)
+                        print("Directory " , name ,  " Created ")
+                else:    
+                        print("Directory " , name ,  " already exists")
+        
+        def openProject(self,name):
+                pass
+        
+        def removeProject(self,name):
+                pass
+        
+        def claseProject(self,name):
+                pass
+        
+        def saveProject(self,name):
+                pass
+        
+        def recentProjects(self):
+                pass

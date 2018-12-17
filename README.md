@@ -87,10 +87,14 @@ https://wxpython.org/Phoenix/docs/html/wx.FileDialog.html
 https://chrisyeh96.github.io/2017/08/08/definitive-guide-python-imports.html
 
 https://docs.python.org/2/tutorial/modules.html
-
 ```
 ### MVC design
 ```sh
 https://wiki.wxpython.org/ModelViewController
 ```
+### python os module
+```sh
+https://thispointer.com/how-to-create-a-directory-in-python/
 
+http://thomas-cokelaer.info/tutorials/python/module_os.html
+```

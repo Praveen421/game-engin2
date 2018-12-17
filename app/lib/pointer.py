@@ -50,6 +50,11 @@ class Pointer():
         self.textEnabled = True
         self.physicsEnabled = False
         self.selected = True
+        # pointer modes 
+        self.mode_1 = False # draw
+        self.mode_2 = False # select
+        self.mode_3 = False # zoom
+        
     def setImage(self,image):
         self.image = image
     def setPos(self,x,y):

@@ -45,6 +45,18 @@ class Layer(object):
             if t.selected == True:
                 t.x = t.x + tx
                 t.y = t.y + ty
+    def moveTo(self,x,y):
+        # self.checkCollision(self,x,y)
+        
+        for t in self.tiles:
+            if t.selected == True:
+                cx,cy = self.getCenter(t)
+                tx,ty = x-cx ,y-cy
+                t.x = t.x + tx
+                t.y = t.y + ty
+    def getCenter(self,tile):
+        cx,cy = tile.x+tile.width/2,tile.y+tile.height/2
+        return cx,cy
     def deSelectAll(self):
         for t in self.tiles:
             t.selected = False
@@ -55,6 +67,16 @@ class Layer(object):
     def deleteAll(self):
         for t in self.tiles:
                 self.tiles.remove(t)
+    
+    def isInside(self,x,y):
+        FlagedTile = False 
+        for t in self.tiles:
+            if x > t.x and x < t.x+t.width:
+                if y > t.y and y < t.y+t.height:
+                    FlagedTile = True
+                    #t.textureEnabled = False
+                    t.selected = True
+        return FlagedTile
     def checkCollision(self,x,y):
         FlagedTiles = []
         for t in self.tiles:
